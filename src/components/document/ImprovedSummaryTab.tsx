@@ -12,10 +12,11 @@ import {
   FiEyeOff,
   FiClock,
   FiFileText,
+  FiAlertCircle,
 } from "react-icons/fi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSummary } from "../../lib/hooks/useSummary";
-import type { Summary } from "../../lib/api/summary.service";
+import type { CreateSummaryRequest, Summary } from "../../lib/api/summary.service";
 import ReactMarkdown from "react-markdown";
 import toast from "react-hot-toast";
 
@@ -23,26 +24,47 @@ interface ImprovedSummaryTabProps {
   fileId: string;
 }
 
+const isValidSummary = (value: unknown): value is Summary => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const summary = value as Partial<Summary>;
+  return (
+    typeof summary.id === "string" &&
+    typeof summary.title === "string" &&
+    typeof summary.content === "string"
+  );
+};
+
+const parseContent = (content: string) => {
+  const thinkRegex = /<think>([\s\S]*?)<\/think>/g;
+  const thinkMatches = [...content.matchAll(thinkRegex)];
+  const thinkingContent = thinkMatches.map((match) => match[1]).join("\n\n");
+  const cleanContent = content.replace(thinkRegex, "").trim();
+  return {
+    thinkingContent,
+    cleanContent,
+    hasThinking: thinkMatches.length > 0,
+  };
+};
+
 export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
   const { createSummary, getFileSummaries, deleteSummary, updateSummaryTitle } =
     useSummary();
   const queryClient = useQueryClient();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [selectedSummaryId, setSelectedSummaryId] = useState<string | null>(
-    null,
-  );
+  const [selectedSummaryId, setSelectedSummaryId] = useState<string | null>(null);
   const [showThinking, setShowThinking] = useState<Record<string, boolean>>({});
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
 
-  // Form state
   const [customTitle, setCustomTitle] = useState("");
   const [chunkLimit, setChunkLimit] = useState(20);
   const [useVectorSearch, setUseVectorSearch] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch summaries
   const {
     data: summaries = [],
     isLoading,
@@ -51,97 +73,89 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
     queryKey: ["summaries", fileId],
     queryFn: async () => {
       const result = await getFileSummaries(fileId);
-      return result?.data || [];
+      return result.data;
     },
     enabled: !!fileId,
     staleTime: 30 * 1000,
     refetchOnMount: false,
   });
 
-  // Create summary mutation
+  const safeSummaries = summaries.filter(isValidSummary);
+
   const createMutation = useMutation({
-    mutationFn: (params: Record<string, unknown>) =>
-      createSummary(fileId, params),
+    mutationFn: (params: CreateSummaryRequest) => createSummary(fileId, params),
     onSuccess: (newSummary) => {
-      queryClient.setQueryData(["summaries", fileId], (old: Summary[]) => [
+      queryClient.setQueryData(["summaries", fileId], (old: Summary[] = []) => [
         newSummary,
-        ...(old || []),
+        ...old.filter(isValidSummary),
       ]);
-      // Reset form
       setCustomTitle("");
       setSearchQuery("");
       setChunkLimit(20);
       setUseVectorSearch(true);
       setShowCreateForm(false);
-      if (newSummary) {
-        setSelectedSummaryId(newSummary.id);
-      }
-      toast.success("Summary generated successfully!");
+      setSelectedSummaryId(newSummary.id);
+      toast.success("Summary generated successfully");
     },
     onError: (error: unknown) => {
-      const err = error as {
-        response?: { data?: { message?: string } };
-        message?: string;
-      };
-      const errorMessage =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Failed to generate summary. Please try again.";
-      toast.error(errorMessage);
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to generate summary. Please try again.";
+      toast.error(message);
     },
   });
 
-  // Delete summary mutation
   const deleteMutation = useMutation({
     mutationFn: deleteSummary,
     onSuccess: (_, deletedId) => {
       queryClient.setQueryData(
         ["summaries", fileId],
-        (old: Summary[]) => old?.filter((s) => s.id !== deletedId) || [],
+        (old: Summary[] = []) =>
+          old.filter(isValidSummary).filter((summary) => summary.id !== deletedId),
       );
       if (selectedSummaryId === deletedId) {
         setSelectedSummaryId(null);
       }
-      toast.success("Summary deleted successfully!");
+      toast.success("Summary deleted successfully");
     },
     onError: (error: unknown) => {
-      const err = error as {
-        response?: { data?: { message?: string } };
-        message?: string;
-      };
-      const errorMessage =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Failed to delete summary.";
-      toast.error(errorMessage);
+      const message =
+        error instanceof Error ? error.message : "Failed to delete summary.";
+      toast.error(message);
     },
   });
 
-  // Update summary title mutation
   const updateMutation = useMutation({
     mutationFn: ({ id, title }: { id: string; title: string }) =>
       updateSummaryTitle(id, title),
     onSuccess: (updatedSummary, { id }) => {
       queryClient.setQueryData(
         ["summaries", fileId],
-        (old: Summary[]) =>
-          old?.map((s) => (s.id === id ? updatedSummary : s)) || [],
+        (old: Summary[] = []) =>
+          old
+            .filter(isValidSummary)
+            .map((summary) => (summary.id === id ? updatedSummary : summary)),
       );
       setEditingId(null);
-      toast.success("Title updated successfully!");
+      toast.success("Title updated successfully");
     },
-    onError: () => {
-      toast.error("Failed to update title");
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : "Failed to update title";
+      toast.error(message);
     },
   });
 
   const handleGenerateSummary = () => {
-    if (createMutation.isPending) return;
+    if (createMutation.isPending) {
+      return;
+    }
+
     createMutation.mutate({
-      customTitle: customTitle || undefined,
+      customTitle: customTitle.trim() || undefined,
       chunkLimit,
       useVectorSearch,
-      searchQuery: searchQuery || undefined,
+      searchQuery: searchQuery.trim() || undefined,
     });
   };
 
@@ -161,7 +175,7 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
       toast.error("Title cannot be empty");
       return;
     }
-    updateMutation.mutate({ id: summaryId, title: editTitle });
+    updateMutation.mutate({ id: summaryId, title: editTitle.trim() });
   };
 
   const handleCancelEdit = () => {
@@ -172,51 +186,34 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
   const downloadSummary = (summary: Summary) => {
     const blob = new Blob([summary.content], { type: "text/markdown" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${summary.title}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${summary.title}.md`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
-    toast.success("Summary downloaded!");
+    toast.success("Summary downloaded");
   };
 
-  const toggleThinking = (summaryId: string) => {
-    setShowThinking((prev) => ({ ...prev, [summaryId]: !prev[summaryId] }));
-  };
-
-  const parseContent = (content: string) => {
-    const thinkRegex = /<think>([\s\S]*?)<\/think>/g;
-    const thinkMatches = [...content.matchAll(thinkRegex)];
-    const thinkingContent = thinkMatches.map((m) => m[1]).join("\n\n");
-    const cleanContent = content.replace(thinkRegex, "").trim();
-    return {
-      thinkingContent,
-      cleanContent,
-      hasThinking: thinkMatches.length > 0,
-    };
-  };
-
-  const selectedSummary = summaries.find((s) => s.id === selectedSummaryId);
+  const selectedSummary = safeSummaries.find((summary) => summary.id === selectedSummaryId);
   const selectedContent = selectedSummary
     ? parseContent(selectedSummary.content)
     : null;
 
   if (fetchError) {
-    const err = fetchError as { message?: string };
+    const message =
+      fetchError instanceof Error ? fetchError.message : "Failed to load summaries";
     return (
       <div className="h-full flex items-center justify-center p-6">
         <div className="text-center max-w-md">
           <div className="p-4 bg-red-100 rounded-full inline-block mb-4">
-            <FiX size={32} className="text-red-600" />
+            <FiAlertCircle size={32} className="text-red-600" />
           </div>
           <h3 className="text-lg font-semibold text-slate-800 mb-2">
             Failed to Load Summaries
           </h3>
-          <p className="text-slate-600">
-            {err?.message || "An error occurred"}
-          </p>
+          <p className="text-slate-600">{message}</p>
         </div>
       </div>
     );
@@ -224,18 +221,17 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
 
   return (
     <div className="h-full flex flex-col bg-slate-50">
-      {/* Header with Create Button */}
       <div className="bg-white border-b border-slate-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-slate-800">Summaries</h3>
             <p className="text-sm text-slate-600 mt-0.5">
-              {summaries.length} summary{summaries.length !== 1 ? "ies" : ""}{" "}
-              available
+              {safeSummaries.length} summary
+              {safeSummaries.length === 1 ? "" : "ies"} available
             </p>
           </div>
           <button
-            onClick={() => setShowCreateForm(!showCreateForm)}
+            onClick={() => setShowCreateForm((prev) => !prev)}
             className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-teal-600 to-cyan-600 text-white rounded-lg hover:from-teal-700 hover:to-cyan-700 transition-all duration-200 font-medium shadow-sm"
           >
             <FiPlus size={18} />
@@ -244,7 +240,6 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
         </div>
       </div>
 
-      {/* Create Form (Collapsible) */}
       {showCreateForm && (
         <div className="bg-white border-b border-slate-200 px-6 py-5 shadow-sm">
           <div className="max-w-2xl">
@@ -261,32 +256,29 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
             </div>
 
             <div className="space-y-4">
-              {/* Custom Title */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Custom Title{" "}
-                  <span className="text-slate-400">(optional)</span>
+                  Custom Title <span className="text-slate-400">(optional)</span>
                 </label>
                 <input
                   type="text"
                   value={customTitle}
-                  onChange={(e) => setCustomTitle(e.target.value)}
+                  onChange={(event) => setCustomTitle(event.target.value)}
                   placeholder="e.g., Chapter 3 Summary"
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                 />
               </div>
 
-              {/* Chunk Limit */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
                   Chunk Limit: {chunkLimit}
                 </label>
                 <input
                   type="range"
-                  min="5"
-                  max="50"
+                  min={5}
+                  max={50}
                   value={chunkLimit}
-                  onChange={(e) => setChunkLimit(parseInt(e.target.value))}
+                  onChange={(event) => setChunkLimit(parseInt(event.target.value, 10))}
                   className="w-full accent-teal-600"
                 />
                 <p className="text-xs text-slate-500 mt-1">
@@ -294,13 +286,12 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                 </p>
               </div>
 
-              {/* Vector Search Toggle */}
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   id="vectorSearch"
                   checked={useVectorSearch}
-                  onChange={(e) => setUseVectorSearch(e.target.checked)}
+                  onChange={(event) => setUseVectorSearch(event.target.checked)}
                   className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500 accent-teal-600"
                 />
                 <label
@@ -312,17 +303,15 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                 </label>
               </div>
 
-              {/* Search Query */}
               {useVectorSearch && (
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                    Focus Query{" "}
-                    <span className="text-slate-400">(optional)</span>
+                    Focus Query <span className="text-slate-400">(optional)</span>
                   </label>
                   <input
                     type="text"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(event) => setSearchQuery(event.target.value)}
                     placeholder="e.g., main concepts and key points"
                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                   />
@@ -332,7 +321,6 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                 </div>
               )}
 
-              {/* Generate Button */}
               <button
                 onClick={handleGenerateSummary}
                 disabled={createMutation.isPending}
@@ -340,7 +328,7 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
               >
                 {createMutation.isPending ? (
                   <span className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     Generating Summary...
                   </span>
                 ) : (
@@ -352,31 +340,27 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
         </div>
       )}
 
-      {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Summaries List */}
         <div
           className={`${selectedSummaryId ? "w-80" : "flex-1"} border-r border-slate-200 bg-white overflow-y-auto transition-all duration-300`}
         >
           {isLoading ? (
             <div className="flex justify-center items-center h-32">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" />
+              <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" />
             </div>
-          ) : summaries.length === 0 ? (
+          ) : safeSummaries.length === 0 ? (
             <div className="text-center py-12 px-6">
               <div className="p-4 bg-slate-100 rounded-full inline-block mb-4">
                 <FiFileText size={32} className="text-slate-400" />
               </div>
-              <p className="text-slate-600 font-medium mb-1">
-                No summaries yet
-              </p>
+              <p className="text-slate-600 font-medium mb-1">No summaries yet</p>
               <p className="text-sm text-slate-500">
-                Click "Create Summary" to generate your first one!
+                Click "Create Summary" to generate your first one.
               </p>
             </div>
           ) : (
             <div className="p-4 space-y-2">
-              {summaries.map((summary) => {
+              {safeSummaries.map((summary) => {
                 const isSelected = selectedSummaryId === summary.id;
                 return (
                   <div
@@ -395,13 +379,13 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                             <input
                               type="text"
                               value={editTitle}
-                              onChange={(e) => setEditTitle(e.target.value)}
-                              onClick={(e) => e.stopPropagation()}
+                              onChange={(event) => setEditTitle(event.target.value)}
+                              onClick={(event) => event.stopPropagation()}
                               className="flex-1 px-2 py-1 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-teal-500"
                             />
                             <button
-                              onClick={(e) => {
-                                e.stopPropagation();
+                              onClick={(event) => {
+                                event.stopPropagation();
                                 handleSaveEdit(summary.id);
                               }}
                               disabled={updateMutation.isPending}
@@ -410,8 +394,8 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                               <FiCheck size={16} />
                             </button>
                             <button
-                              onClick={(e) => {
-                                e.stopPropagation();
+                              onClick={(event) => {
+                                event.stopPropagation();
                                 handleCancelEdit();
                               }}
                               className="p-1.5 text-red-600 hover:bg-red-50 rounded"
@@ -431,19 +415,18 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                               </span>
                               <span className="flex items-center gap-1">
                                 <FiClock size={12} />
-                                {new Date(
-                                  summary.createdAt,
-                                ).toLocaleDateString()}
+                                {new Date(summary.createdAt).toLocaleDateString()}
                               </span>
                             </div>
                           </>
                         )}
                       </div>
+
                       {editingId !== summary.id && (
                         <div className="flex items-center gap-1">
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
+                            onClick={(event) => {
+                              event.stopPropagation();
                               handleStartEdit(summary);
                             }}
                             className="p-1.5 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded transition-colors"
@@ -452,8 +435,8 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                             <FiEdit2 size={14} />
                           </button>
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
+                            onClick={(event) => {
+                              event.stopPropagation();
                               downloadSummary(summary);
                             }}
                             className="p-1.5 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded transition-colors"
@@ -462,8 +445,8 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                             <FiDownload size={14} />
                           </button>
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
+                            onClick={(event) => {
+                              event.stopPropagation();
                               handleDelete(summary.id);
                             }}
                             disabled={deleteMutation.isPending}
@@ -482,10 +465,8 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
           )}
         </div>
 
-        {/* Summary Content Viewer */}
         {selectedSummaryId && selectedContent && (
           <div className="flex-1 flex flex-col bg-slate-50 overflow-hidden">
-            {/* Content Header */}
             <div className="bg-white border-b border-slate-200 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -494,9 +475,9 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                   </h3>
                   <div className="flex items-center gap-4 mt-1 text-xs text-slate-600">
                     <span>{selectedSummary?.wordCount} words</span>
-                    <span>•</span>
+                    <span>|</span>
                     <span>{selectedSummary?.tokensUsed} tokens</span>
-                    <span>•</span>
+                    <span>|</span>
                     <span>{selectedSummary?.modelUsed}</span>
                   </div>
                 </div>
@@ -509,31 +490,34 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
               </div>
             </div>
 
-            {/* Content Body */}
             <div className="flex-1 overflow-y-auto p-6">
               <div className="max-w-4xl mx-auto">
-                {/* Thinking Section (Collapsible) */}
                 {selectedContent.hasThinking && (
                   <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg overflow-hidden">
                     <button
-                      onClick={() => toggleThinking(selectedSummaryId!)}
+                      onClick={() =>
+                        setShowThinking((prev) => ({
+                          ...prev,
+                          [selectedSummaryId]: !prev[selectedSummaryId],
+                        }))
+                      }
                       className="w-full flex items-center justify-between px-4 py-3 hover:bg-amber-100 transition-colors"
                     >
                       <div className="flex items-center gap-2 text-amber-800 font-medium">
-                        {showThinking[selectedSummaryId!] ? (
+                        {showThinking[selectedSummaryId] ? (
                           <FiEyeOff size={18} />
                         ) : (
                           <FiEye size={18} />
                         )}
                         <span>AI Thinking Process</span>
                       </div>
-                      {showThinking[selectedSummaryId!] ? (
+                      {showThinking[selectedSummaryId] ? (
                         <FiChevronUp className="text-amber-600" />
                       ) : (
                         <FiChevronDown className="text-amber-600" />
                       )}
                     </button>
-                    {showThinking[selectedSummaryId!] && (
+                    {showThinking[selectedSummaryId] && (
                       <div className="px-4 py-3 border-t border-amber-200 bg-white">
                         <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-wrap">
                           {selectedContent.thinkingContent}
@@ -543,12 +527,9 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                   </div>
                 )}
 
-                {/* Main Content */}
                 <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-6">
                   <div className="prose prose-slate max-w-none">
-                    <ReactMarkdown>
-                      {selectedContent.cleanContent}
-                    </ReactMarkdown>
+                    <ReactMarkdown>{selectedContent.cleanContent}</ReactMarkdown>
                   </div>
                 </div>
               </div>
@@ -559,3 +540,4 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
     </div>
   );
 };
+

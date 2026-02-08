@@ -416,7 +416,12 @@ const DocumentViewer = () => {
                 {activeTab === "summary" && (
                   <ImprovedSummaryTab fileId={fileId!} />
                 )}
-                {activeTab === "quiz" && <QuizTab />}
+                {activeTab === "quiz" && (
+                  <QuizTab
+                    fileId={fileId!}
+                    processingStatus={processingStatus}
+                  />
+                )}
                 {activeTab === "flashcards" && <FlashcardsTab />}
               </div>
 

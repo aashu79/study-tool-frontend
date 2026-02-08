@@ -2,12 +2,25 @@ import { useState } from "react";
 import { FiDownload, FiTrash2, FiEdit2, FiCheck, FiX } from "react-icons/fi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSummary } from "../../lib/hooks/useSummary";
-import type { Summary } from "../../lib/api/summary.service";
+import type { CreateSummaryRequest, Summary } from "../../lib/api/summary.service";
 import ReactMarkdown from "react-markdown";
 
 interface SummaryTabProps {
   fileId: string;
 }
+
+const isValidSummary = (value: unknown): value is Summary => {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const summary = value as Partial<Summary>;
+  return (
+    typeof summary.id === "string" &&
+    typeof summary.title === "string" &&
+    typeof summary.content === "string"
+  );
+};
 
 export const SummaryTab = ({ fileId }: SummaryTabProps) => {
   const { createSummary, getFileSummaries, deleteSummary, updateSummaryTitle } =
@@ -17,31 +30,29 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
 
-  // Form state
   const [customTitle, setCustomTitle] = useState("");
   const [chunkLimit, setChunkLimit] = useState(20);
   const [useVectorSearch, setUseVectorSearch] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch summaries
   const { data: summaries = [], isLoading } = useQuery({
     queryKey: ["summaries", fileId],
     queryFn: async () => {
       const result = await getFileSummaries(fileId);
-      return result?.data || [];
+      return result.data;
     },
     enabled: !!fileId,
   });
 
-  // Create summary mutation
+  const safeSummaries = summaries.filter(isValidSummary);
+
   const createMutation = useMutation({
-    mutationFn: (params: any) => createSummary(fileId, params),
+    mutationFn: (params: CreateSummaryRequest) => createSummary(fileId, params),
     onSuccess: (newSummary) => {
-      queryClient.setQueryData(["summaries", fileId], (old: Summary[]) => [
+      queryClient.setQueryData(["summaries", fileId], (old: Summary[] = []) => [
         newSummary,
-        ...(old || []),
+        ...old.filter(isValidSummary),
       ]);
-      // Reset form
       setCustomTitle("");
       setSearchQuery("");
       setChunkLimit(20);
@@ -49,26 +60,27 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
     },
   });
 
-  // Delete summary mutation
   const deleteMutation = useMutation({
     mutationFn: deleteSummary,
     onSuccess: (_, deletedId) => {
       queryClient.setQueryData(
         ["summaries", fileId],
-        (old: Summary[]) => old?.filter((s) => s.id !== deletedId) || [],
+        (old: Summary[] = []) =>
+          old.filter(isValidSummary).filter((summary) => summary.id !== deletedId),
       );
     },
   });
 
-  // Update summary title mutation
   const updateMutation = useMutation({
     mutationFn: ({ id, title }: { id: string; title: string }) =>
       updateSummaryTitle(id, title),
     onSuccess: (updatedSummary, { id }) => {
       queryClient.setQueryData(
         ["summaries", fileId],
-        (old: Summary[]) =>
-          old?.map((s) => (s.id === id ? updatedSummary : s)) || [],
+        (old: Summary[] = []) =>
+          old
+            .filter(isValidSummary)
+            .map((summary) => (summary.id === id ? updatedSummary : summary)),
       );
       setEditingId(null);
     },
@@ -106,25 +118,23 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
   const downloadSummary = (summary: Summary) => {
     const blob = new Blob([summary.content], { type: "text/markdown" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${summary.title}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${summary.title}.md`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
 
   return (
     <div className="h-full flex flex-col">
-      {/* Generation Form */}
       <div className="bg-white border-b border-slate-200 p-6">
         <h3 className="text-lg font-semibold text-slate-800 mb-4">
           Generate Summary
         </h3>
 
         <div className="space-y-4">
-          {/* Custom Title */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
               Custom Title (optional)
@@ -132,23 +142,22 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
             <input
               type="text"
               value={customTitle}
-              onChange={(e) => setCustomTitle(e.target.value)}
+              onChange={(event) => setCustomTitle(event.target.value)}
               placeholder="e.g., Chapter 3 Summary"
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           </div>
 
-          {/* Chunk Limit */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
               Chunk Limit: {chunkLimit}
             </label>
             <input
               type="range"
-              min="5"
-              max="50"
+              min={5}
+              max={50}
               value={chunkLimit}
-              onChange={(e) => setChunkLimit(parseInt(e.target.value))}
+              onChange={(event) => setChunkLimit(parseInt(event.target.value, 10))}
               className="w-full"
             />
             <p className="text-xs text-slate-500 mt-1">
@@ -156,13 +165,12 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
             </p>
           </div>
 
-          {/* Vector Search Toggle */}
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
               id="vectorSearch"
               checked={useVectorSearch}
-              onChange={(e) => setUseVectorSearch(e.target.checked)}
+              onChange={(event) => setUseVectorSearch(event.target.checked)}
               className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500"
             />
             <label htmlFor="vectorSearch" className="text-sm text-slate-700">
@@ -170,7 +178,6 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
             </label>
           </div>
 
-          {/* Search Query */}
           {useVectorSearch && (
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
@@ -179,7 +186,7 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(event) => setSearchQuery(event.target.value)}
                 placeholder="e.g., main concepts and key points"
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               />
@@ -189,7 +196,6 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
             </div>
           )}
 
-          {/* Generate Button */}
           <button
             onClick={handleGenerateSummary}
             disabled={createMutation.isPending}
@@ -197,7 +203,7 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
           >
             {createMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Generating Summary...
               </span>
             ) : (
@@ -208,18 +214,19 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
 
         {createMutation.error && (
           <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-            {createMutation.error.message}
+            {createMutation.error instanceof Error
+              ? createMutation.error.message
+              : "Failed to generate summary"}
           </div>
         )}
       </div>
 
-      {/* Summaries List */}
       <div className="flex-1 overflow-y-auto p-6">
         {isLoading ? (
           <div className="flex justify-center items-center h-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" />
+            <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600" />
           </div>
-        ) : summaries.length === 0 ? (
+        ) : safeSummaries.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-slate-500">
               No summaries yet. Generate your first summary above!
@@ -227,12 +234,11 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
           </div>
         ) : (
           <div className="space-y-6">
-            {summaries.map((summary) => (
+            {safeSummaries.map((summary) => (
               <div
                 key={summary.id}
                 className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden"
               >
-                {/* Header */}
                 <div className="bg-linear-to-r from-teal-50 to-cyan-50 p-4 border-b border-slate-200">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -241,7 +247,7 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
                           <input
                             type="text"
                             value={editTitle}
-                            onChange={(e) => setEditTitle(e.target.value)}
+                            onChange={(event) => setEditTitle(event.target.value)}
                             className="flex-1 px-3 py-1 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500"
                           />
                           <button
@@ -271,12 +277,10 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
                       )}
                       <div className="flex items-center gap-4 mt-2 text-xs text-slate-600">
                         <span>{summary.wordCount} words</span>
-                        <span>•</span>
+                        <span>|</span>
                         <span>{summary.tokensUsed} tokens</span>
-                        <span>•</span>
-                        <span>
-                          {new Date(summary.createdAt).toLocaleDateString()}
-                        </span>
+                        <span>|</span>
+                        <span>{new Date(summary.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -299,7 +303,6 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
                   </div>
                 </div>
 
-                {/* Content */}
                 <div className="p-6 prose prose-sm max-w-none">
                   <ReactMarkdown>{summary.content}</ReactMarkdown>
                 </div>
@@ -311,3 +314,4 @@ export const SummaryTab = ({ fileId }: SummaryTabProps) => {
     </div>
   );
 };
+

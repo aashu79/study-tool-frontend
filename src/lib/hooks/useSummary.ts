@@ -6,6 +6,7 @@ import {
   type SummaryListResponse,
   type SummaryQueryParams,
 } from "../api/summary.service";
+import { getApiErrorMessage } from "../api/error";
 
 export const useSummary = () => {
   const [loading, setLoading] = useState(false);
@@ -14,17 +15,15 @@ export const useSummary = () => {
   const createSummary = async (
     fileId: string,
     options?: CreateSummaryRequest,
-  ): Promise<Summary | null> => {
+  ): Promise<Summary> => {
     try {
       setLoading(true);
       setError(null);
-      const data = await summaryService.createSummary(fileId, options);
-      return data;
+      return await summaryService.createSummary(fileId, options);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to create summary";
+      const message = getApiErrorMessage(err, "Failed to create summary");
       setError(message);
-      return null;
+      throw new Error(message);
     } finally {
       setLoading(false);
     }
@@ -32,33 +31,29 @@ export const useSummary = () => {
 
   const getFileSummaries = async (
     fileId: string,
-  ): Promise<SummaryListResponse | null> => {
+  ): Promise<SummaryListResponse> => {
     try {
       setLoading(true);
       setError(null);
-      const data = await summaryService.getFileSummaries(fileId);
-      return data;
+      return await summaryService.getFileSummaries(fileId);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to get summaries";
+      const message = getApiErrorMessage(err, "Failed to get summaries");
       setError(message);
-      return null;
+      throw new Error(message);
     } finally {
       setLoading(false);
     }
   };
 
-  const getSummary = async (summaryId: string): Promise<Summary | null> => {
+  const getSummary = async (summaryId: string): Promise<Summary> => {
     try {
       setLoading(true);
       setError(null);
-      const data = await summaryService.getSummary(summaryId);
-      return data;
+      return await summaryService.getSummary(summaryId);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to get summary";
+      const message = getApiErrorMessage(err, "Failed to get summary");
       setError(message);
-      return null;
+      throw new Error(message);
     } finally {
       setLoading(false);
     }
@@ -66,33 +61,29 @@ export const useSummary = () => {
 
   const getUserSummaries = async (
     params?: SummaryQueryParams,
-  ): Promise<SummaryListResponse | null> => {
+  ): Promise<SummaryListResponse> => {
     try {
       setLoading(true);
       setError(null);
-      const data = await summaryService.getUserSummaries(params);
-      return data;
+      return await summaryService.getUserSummaries(params);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to get summaries";
+      const message = getApiErrorMessage(err, "Failed to get summaries");
       setError(message);
-      return null;
+      throw new Error(message);
     } finally {
       setLoading(false);
     }
   };
 
-  const deleteSummary = async (summaryId: string): Promise<boolean> => {
+  const deleteSummary = async (summaryId: string): Promise<void> => {
     try {
       setLoading(true);
       setError(null);
       await summaryService.deleteSummary(summaryId);
-      return true;
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to delete summary";
+      const message = getApiErrorMessage(err, "Failed to delete summary");
       setError(message);
-      return false;
+      throw new Error(message);
     } finally {
       setLoading(false);
     }
@@ -101,17 +92,15 @@ export const useSummary = () => {
   const updateSummaryTitle = async (
     summaryId: string,
     title: string,
-  ): Promise<Summary | null> => {
+  ): Promise<Summary> => {
     try {
       setLoading(true);
       setError(null);
-      const data = await summaryService.updateSummaryTitle(summaryId, title);
-      return data;
+      return await summaryService.updateSummaryTitle(summaryId, title);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to update summary";
+      const message = getApiErrorMessage(err, "Failed to update summary");
       setError(message);
-      return null;
+      throw new Error(message);
     } finally {
       setLoading(false);
     }
