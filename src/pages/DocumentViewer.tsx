@@ -40,7 +40,10 @@ const DocumentViewer = () => {
     handleDocumentExpand,
     handleContentExpand,
   } = usePanelState();
-  const { activeTab, setActiveTab, tabs } = useTabs(studySessionId, logStudyEvent);
+  const { activeTab, setActiveTab, tabs } = useTabs(
+    studySessionId,
+    logStudyEvent,
+  );
   const { showStudySessionPrompt, setShowStudySessionPrompt } =
     useStudySessionPrompt(
       documentData,

@@ -32,16 +32,24 @@ export const useStudySession = (fileId: string | undefined) => {
 
   const persistStudySessionId = useCallback(
     (currentFileId: string, currentSessionId: string) => {
-      sessionStorage.setItem(
-        getStudySessionStorageKey(currentFileId),
-        currentSessionId,
-      );
+      try {
+        sessionStorage.setItem(
+          getStudySessionStorageKey(currentFileId),
+          currentSessionId,
+        );
+      } catch (error: unknown) {
+        console.error("Failed to persist study session id:", error);
+      }
     },
     [],
   );
 
   const clearStoredStudySessionId = useCallback((currentFileId: string) => {
-    sessionStorage.removeItem(getStudySessionStorageKey(currentFileId));
+    try {
+      sessionStorage.removeItem(getStudySessionStorageKey(currentFileId));
+    } catch (error: unknown) {
+      console.error("Failed to clear stored study session id:", error);
+    }
   }, []);
 
   const logStudyEvent = useCallback(
@@ -169,7 +177,8 @@ export const useStudySession = (fileId: string | undefined) => {
       }
 
       try {
-        const activeSession = await studySessionService.getActiveStudySession(fileId);
+        const activeSession =
+          await studySessionService.getActiveStudySession(fileId);
         if (activeSession?.id) {
           return activeSession;
         }
@@ -241,7 +250,12 @@ export const useStudySession = (fileId: string | undefined) => {
 
     const loadActiveSession = async () => {
       const storageKey = getStudySessionStorageKey(fileId);
-      const storedSessionId = sessionStorage.getItem(storageKey);
+      let storedSessionId: string | null = null;
+      try {
+        storedSessionId = sessionStorage.getItem(storageKey);
+      } catch (error: unknown) {
+        console.error("Failed to read stored study session id:", error);
+      }
 
       try {
         const activeSession =
@@ -264,8 +278,30 @@ export const useStudySession = (fileId: string | undefined) => {
         }
 
         if (storedSessionId) {
-          clearStoredStudySessionId(fileId);
+          // Keep locally known session immediately, then validate with retries.
+          sessionIdRef.current = storedSessionId;
+          setStudySessionId(storedSessionId);
+
+          const retriedActiveSession = await fetchActiveSessionWithRetry();
+          if (isCancelled) {
+            return;
+          }
+
+          if (retriedActiveSession?.id) {
+            sessionIdRef.current = retriedActiveSession.id;
+            setStudySessionId(retriedActiveSession.id);
+            persistStudySessionId(fileId, retriedActiveSession.id);
+            return;
+          }
+
+          if (sessionIdRef.current === storedSessionId) {
+            clearStoredStudySessionId(fileId);
+            sessionIdRef.current = null;
+            setStudySessionId(null);
+          }
+          return;
         }
+
         sessionIdRef.current = null;
         setStudySessionId(null);
       } catch (error: unknown) {
@@ -293,7 +329,12 @@ export const useStudySession = (fileId: string | undefined) => {
     return () => {
       isCancelled = true;
     };
-  }, [clearStoredStudySessionId, fileId, persistStudySessionId]);
+  }, [
+    clearStoredStudySessionId,
+    fetchActiveSessionWithRetry,
+    fileId,
+    persistStudySessionId,
+  ]);
 
   // Cleanup on unmount
   useEffect(() => {
