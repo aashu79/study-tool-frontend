@@ -16,7 +16,10 @@ import {
 } from "react-icons/fi";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSummary } from "../../lib/hooks/useSummary";
-import type { CreateSummaryRequest, Summary } from "../../lib/api/summary.service";
+import type {
+  CreateSummaryRequest,
+  Summary,
+} from "../../lib/api/summary.service";
 import ReactMarkdown from "react-markdown";
 import toast from "react-hot-toast";
 
@@ -55,7 +58,9 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
   const queryClient = useQueryClient();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [selectedSummaryId, setSelectedSummaryId] = useState<string | null>(null);
+  const [selectedSummaryId, setSelectedSummaryId] = useState<string | null>(
+    null,
+  );
   const [showThinking, setShowThinking] = useState<Record<string, boolean>>({});
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
@@ -109,10 +114,10 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
   const deleteMutation = useMutation({
     mutationFn: deleteSummary,
     onSuccess: (_, deletedId) => {
-      queryClient.setQueryData(
-        ["summaries", fileId],
-        (old: Summary[] = []) =>
-          old.filter(isValidSummary).filter((summary) => summary.id !== deletedId),
+      queryClient.setQueryData(["summaries", fileId], (old: Summary[] = []) =>
+        old
+          .filter(isValidSummary)
+          .filter((summary) => summary.id !== deletedId),
       );
       if (selectedSummaryId === deletedId) {
         setSelectedSummaryId(null);
@@ -130,18 +135,17 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
     mutationFn: ({ id, title }: { id: string; title: string }) =>
       updateSummaryTitle(id, title),
     onSuccess: (updatedSummary, { id }) => {
-      queryClient.setQueryData(
-        ["summaries", fileId],
-        (old: Summary[] = []) =>
-          old
-            .filter(isValidSummary)
-            .map((summary) => (summary.id === id ? updatedSummary : summary)),
+      queryClient.setQueryData(["summaries", fileId], (old: Summary[] = []) =>
+        old
+          .filter(isValidSummary)
+          .map((summary) => (summary.id === id ? updatedSummary : summary)),
       );
       setEditingId(null);
       toast.success("Title updated successfully");
     },
     onError: (error: unknown) => {
-      const message = error instanceof Error ? error.message : "Failed to update title";
+      const message =
+        error instanceof Error ? error.message : "Failed to update title";
       toast.error(message);
     },
   });
@@ -196,14 +200,18 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
     toast.success("Summary downloaded");
   };
 
-  const selectedSummary = safeSummaries.find((summary) => summary.id === selectedSummaryId);
+  const selectedSummary = safeSummaries.find(
+    (summary) => summary.id === selectedSummaryId,
+  );
   const selectedContent = selectedSummary
     ? parseContent(selectedSummary.content)
     : null;
 
   if (fetchError) {
     const message =
-      fetchError instanceof Error ? fetchError.message : "Failed to load summaries";
+      fetchError instanceof Error
+        ? fetchError.message
+        : "Failed to load summaries";
     return (
       <div className="h-full flex items-center justify-center p-6">
         <div className="text-center max-w-md">
@@ -258,7 +266,8 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Custom Title <span className="text-slate-400">(optional)</span>
+                  Custom Title{" "}
+                  <span className="text-slate-400">(optional)</span>
                 </label>
                 <input
                   type="text"
@@ -278,7 +287,9 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                   min={5}
                   max={50}
                   value={chunkLimit}
-                  onChange={(event) => setChunkLimit(parseInt(event.target.value, 10))}
+                  onChange={(event) =>
+                    setChunkLimit(parseInt(event.target.value, 10))
+                  }
                   className="w-full accent-teal-600"
                 />
                 <p className="text-xs text-slate-500 mt-1">
@@ -306,7 +317,8 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
               {useVectorSearch && (
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                    Focus Query <span className="text-slate-400">(optional)</span>
+                    Focus Query{" "}
+                    <span className="text-slate-400">(optional)</span>
                   </label>
                   <input
                     type="text"
@@ -353,7 +365,9 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
               <div className="p-4 bg-slate-100 rounded-full inline-block mb-4">
                 <FiFileText size={32} className="text-slate-400" />
               </div>
-              <p className="text-slate-600 font-medium mb-1">No summaries yet</p>
+              <p className="text-slate-600 font-medium mb-1">
+                No summaries yet
+              </p>
               <p className="text-sm text-slate-500">
                 Click "Create Summary" to generate your first one.
               </p>
@@ -379,7 +393,9 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                             <input
                               type="text"
                               value={editTitle}
-                              onChange={(event) => setEditTitle(event.target.value)}
+                              onChange={(event) =>
+                                setEditTitle(event.target.value)
+                              }
                               onClick={(event) => event.stopPropagation()}
                               className="flex-1 px-2 py-1 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-teal-500"
                             />
@@ -415,7 +431,9 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
                               </span>
                               <span className="flex items-center gap-1">
                                 <FiClock size={12} />
-                                {new Date(summary.createdAt).toLocaleDateString()}
+                                {new Date(
+                                  summary.createdAt,
+                                ).toLocaleDateString()}
                               </span>
                             </div>
                           </>
@@ -529,7 +547,9 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
 
                 <div className="bg-white rounded-lg border border-slate-200 shadow-sm p-6">
                   <div className="prose prose-slate max-w-none">
-                    <ReactMarkdown>{selectedContent.cleanContent}</ReactMarkdown>
+                    <ReactMarkdown>
+                      {selectedContent.cleanContent}
+                    </ReactMarkdown>
                   </div>
                 </div>
               </div>
@@ -540,4 +560,3 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
     </div>
   );
 };
-

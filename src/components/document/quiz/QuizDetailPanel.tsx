@@ -8,9 +8,11 @@ import {
   FiPlayCircle,
   FiRefreshCw,
   FiTrendingUp,
+  FiX,
   FiXCircle,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
+import ReactMarkdown from "react-markdown";
 import type {
   QuizAttempt,
   QuizAttemptDetails,
@@ -18,7 +20,7 @@ import type {
   QuizSubmissionResult,
   SubmitQuizAnswersRequest,
 } from "../../../lib/api/quiz.service";
-import { IoCloseCircleOutline } from "react-icons/io5";
+import { toRenderableMarkdown } from "../../../lib/utils/markdown";
 
 interface QuizDetailPanelProps {
   quiz: QuizDetails | undefined;
@@ -61,6 +63,25 @@ const formatDateTime = (value?: string) => {
 
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? "Unknown date" : date.toLocaleString();
+};
+
+const MarkdownBlock = ({
+  content,
+  className = "",
+}: {
+  content?: string | null;
+  className?: string;
+}) => {
+  const markdown = toRenderableMarkdown(content);
+  if (!markdown) {
+    return <p className="text-sm text-slate-500">N/A</p>;
+  }
+
+  return (
+    <div className={`prose prose-sm max-w-none text-slate-700 ${className}`}>
+      <ReactMarkdown>{markdown}</ReactMarkdown>
+    </div>
+  );
 };
 
 export const QuizDetailPanel = ({
@@ -238,9 +259,9 @@ export const QuizDetailPanel = ({
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">
                   Recommended Actions
                 </p>
-                <p className="text-sm text-slate-700">
-                  {latestSubmission.insight.recommendedActions}
-                </p>
+                <MarkdownBlock
+                  content={latestSubmission.insight.recommendedActions}
+                />
               </div>
             )}
           </div>
@@ -410,12 +431,10 @@ export const QuizDetailPanel = ({
                   <button
                     type="button"
                     onClick={onClearAttemptSelection}
-                    className="text-xs text-red-600 hover:text-slate-900"
+                    className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700"
                   >
-                    <span className="inline-flex items-center gap-1">
-                      <IoCloseCircleOutline size={14} />
-                      <p>Close</p>
-                    </span>
+                    <FiX size={14} />
+                    Close
                   </button>
                 </div>
 
@@ -520,9 +539,10 @@ export const QuizDetailPanel = ({
                                 </div>
 
                                 {question.explanation ? (
-                                  <p className="text-xs text-slate-600">
-                                    {question.explanation}
-                                  </p>
+                                  <MarkdownBlock
+                                    content={question.explanation}
+                                    className="text-xs"
+                                  />
                                 ) : null}
                               </div>
                             </div>
@@ -531,36 +551,54 @@ export const QuizDetailPanel = ({
                       </div>
 
                       {attemptDetails.insight && (
-                        <div className="rounded-lg border border-cyan-200 bg-cyan-50 p-3 space-y-2">
+                        <div className="rounded-lg border border-cyan-200 bg-cyan-50 p-4 space-y-3">
                           <p className="text-sm font-semibold text-cyan-900">
                             AI Performance Insight
                           </p>
-                          <p className="text-sm text-slate-700">
-                            <span className="font-semibold">Strengths:</span>{" "}
-                            {attemptDetails.insight.strengths || "N/A"}
-                          </p>
-                          <p className="text-sm text-slate-700">
-                            <span className="font-semibold">Weaknesses:</span>{" "}
-                            {attemptDetails.insight.weaknesses || "N/A"}
-                          </p>
-                          {attemptDetails.insight.weakAreas.length > 0 && (
-                            <p className="text-sm text-slate-700">
-                              <span className="font-semibold">Weak Areas:</span>{" "}
-                              {attemptDetails.insight.weakAreas.join(", ")}
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">
+                              Strengths
                             </p>
+                            <MarkdownBlock
+                              content={attemptDetails.insight.strengths}
+                            />
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">
+                              Weaknesses
+                            </p>
+                            <MarkdownBlock
+                              content={attemptDetails.insight.weaknesses}
+                            />
+                          </div>
+                          {attemptDetails.insight.weakAreas.length > 0 && (
+                            <div>
+                              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">
+                                Weak Areas
+                              </p>
+                              <p className="text-sm text-slate-700">
+                                {attemptDetails.insight.weakAreas.join(", ")}
+                              </p>
+                            </div>
                           )}
-                          <p className="text-sm text-slate-700">
-                            <span className="font-semibold">
-                              Detailed Insights:
-                            </span>{" "}
-                            {attemptDetails.insight.detailedInsights || "N/A"}
-                          </p>
-                          <p className="text-sm text-slate-700">
-                            <span className="font-semibold">
-                              Recommended Actions:
-                            </span>{" "}
-                            {attemptDetails.insight.recommendedActions || "N/A"}
-                          </p>
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">
+                              Detailed Insights
+                            </p>
+                            <MarkdownBlock
+                              content={attemptDetails.insight.detailedInsights}
+                            />
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">
+                              Recommended Actions
+                            </p>
+                            <MarkdownBlock
+                              content={
+                                attemptDetails.insight.recommendedActions
+                              }
+                            />
+                          </div>
                         </div>
                       )}
                     </>

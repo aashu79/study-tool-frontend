@@ -15,6 +15,7 @@ import type {
 interface QuizTabProps {
   fileId: string;
   processingStatus?: string;
+  studySessionId?: string | null;
 }
 
 const PAGE_SIZE = 8;
@@ -35,7 +36,11 @@ const getProcessingBlockingMessage = (status?: string) => {
   return "Document is not ready yet. Please process it before generating quizzes.";
 };
 
-export const QuizTab = ({ fileId, processingStatus }: QuizTabProps) => {
+export const QuizTab = ({
+  fileId,
+  processingStatus,
+  studySessionId,
+}: QuizTabProps) => {
   const queryClient = useQueryClient();
   const {
     createQuizFromFile,
@@ -118,7 +123,12 @@ export const QuizTab = ({ fileId, processingStatus }: QuizTabProps) => {
     mutationFn: (payload: {
       quizId: string;
       answers: SubmitQuizAnswersRequest["answers"];
-    }) => submitQuizAnswers(payload.quizId, { answers: payload.answers }),
+      sessionId?: string;
+    }) =>
+      submitQuizAnswers(payload.quizId, {
+        answers: payload.answers,
+        sessionId: payload.sessionId,
+      }),
     onSuccess: (result) => {
       setLatestSubmission(result);
       setSelectedAttemptId(result.id);
@@ -253,6 +263,7 @@ export const QuizTab = ({ fileId, processingStatus }: QuizTabProps) => {
               submitAnswersMutation.mutate({
                 quizId: activeQuizId,
                 answers: payload.answers,
+                sessionId: studySessionId ?? undefined,
               });
             }}
             onSelectAttempt={(attemptId) => setSelectedAttemptId(attemptId)}

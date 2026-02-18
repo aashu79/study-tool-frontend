@@ -79,6 +79,7 @@ export interface QuizAnswerSubmission {
 }
 
 export interface SubmitQuizAnswersRequest {
+  sessionId?: string;
   answers: QuizAnswerSubmission[];
 }
 
