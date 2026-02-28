@@ -10,6 +10,8 @@ import UploadPage from "../pages/Upload";
 import Profile from "../pages/Profile";
 import MyMaterials from "../pages/MyMaterials";
 import DocumentViewer from "../pages/DocumentViewer";
+import StudySessions from "../pages/StudySessions";
+import StudySessionReport from "../pages/StudySessionReport";
 import { ProtectedRoute } from "../lib/components/ProtectedRoute";
 
 const Routes = () => {
@@ -58,6 +60,22 @@ const Routes = () => {
         element={
           <ProtectedRoute>
             <DocumentViewer />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/study-sessions"
+        element={
+          <ProtectedRoute>
+            <StudySessions />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/study-sessions/:sessionId/report"
+        element={
+          <ProtectedRoute>
+            <StudySessionReport />
           </ProtectedRoute>
         }
       />

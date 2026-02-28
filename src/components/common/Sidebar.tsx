@@ -1,6 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
 import { Layout, Menu, Drawer } from "antd";
-import { FiBarChart2, FiUpload, FiUser, FiX, FiFolder } from "react-icons/fi";
+import {
+  FiActivity,
+  FiBarChart2,
+  FiUpload,
+  FiUser,
+  FiX,
+  FiFolder,
+} from "react-icons/fi";
 import { IoSchool } from "react-icons/io5";
 
 const { Sider } = Layout;
@@ -39,6 +46,11 @@ const Sidebar = ({
       label: <Link to="/upload">Upload Study Materials</Link>,
     },
     {
+      key: "/study-sessions",
+      icon: <FiActivity size={18} />,
+      label: <Link to="/study-sessions">Study Sessions</Link>,
+    },
+    {
       key: "/profile",
       icon: <FiUser size={18} />,
       label: <Link to="/profile">Profile</Link>,
@@ -69,7 +81,14 @@ const Sidebar = ({
       {/* Menu */}
       <Menu
         mode="inline"
-        selectedKeys={[location.pathname]}
+        selectedKeys={[
+          menuItems.find(
+            (item) =>
+              location.pathname === item.key ||
+              (item.key !== "/dashboard" &&
+                location.pathname.startsWith(item.key as string)),
+          )?.key ?? location.pathname,
+        ]}
         items={menuItems}
         className="border-0 pt-4"
         style={{
