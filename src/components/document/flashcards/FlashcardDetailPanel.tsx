@@ -158,25 +158,24 @@ export const FlashcardDetailPanel = ({
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm h-full min-h-[32rem] flex items-center justify-center">
-        <div className="h-10 w-10 rounded-full border-2 border-emerald-600 border-t-transparent animate-spin" />
+      <div className="rounded-xl border border-slate-200/80 bg-white shadow-sm h-full min-h-128 flex items-center justify-center">
+        <div className="h-10 w-10 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
       </div>
     );
   }
 
   if (!flashcardSet) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm h-full min-h-[32rem] flex items-center justify-center p-6">
+      <div className="rounded-xl border border-slate-200/80 bg-white shadow-sm h-full min-h-128 flex items-center justify-center p-6">
         <div className="text-center max-w-sm">
-          <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center">
-            <FiFileText size={24} />
+          <div className="mx-auto mb-3 h-12 w-12 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
+            <FiFileText size={22} />
           </div>
-          <h3 className="text-lg font-semibold text-slate-800 mb-1">
+          <h3 className="text-base font-semibold text-slate-800 mb-1">
             Select a Set
           </h3>
-          <p className="text-sm text-slate-600">
-            Choose a flashcard set from the library to view, rename, delete, or
-            start studying.
+          <p className="text-sm text-slate-500">
+            Choose a flashcard set from the library to view or study.
           </p>
         </div>
       </div>
@@ -185,19 +184,19 @@ export const FlashcardDetailPanel = ({
 
   if (loadError) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 h-full min-h-[32rem] flex items-center justify-center p-6">
+      <div className="rounded-xl border border-red-200 bg-red-50 h-full min-h-128 flex items-center justify-center p-6">
         <div className="text-center max-w-md">
-          <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-white text-red-600 flex items-center justify-center">
-            <FiAlertCircle size={24} />
+          <div className="mx-auto mb-3 h-12 w-12 rounded-xl bg-white text-red-500 flex items-center justify-center">
+            <FiAlertCircle size={22} />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-1">
+          <h3 className="text-base font-semibold text-slate-900 mb-1">
             Failed to load flashcard set
           </h3>
-          <p className="text-sm text-red-700 mb-4">{loadError}</p>
+          <p className="text-sm text-red-600 mb-4">{loadError}</p>
           <button
             type="button"
             onClick={onRetry}
-            className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
+            className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700"
           >
             <FiRotateCw size={14} />
             Try Again
@@ -208,8 +207,8 @@ export const FlashcardDetailPanel = ({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden h-full min-h-[32rem] flex flex-col">
-      <div className="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-emerald-700 via-teal-700 to-cyan-700 text-white">
+    <div className="rounded-xl border border-slate-200/80 bg-white shadow-sm overflow-hidden h-full min-h-128 flex flex-col">
+      <div className="px-4 py-3 border-b border-slate-200 bg-linear-to-r from-slate-900 via-indigo-900 to-violet-900 text-white">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             {isEditingTitle ? (
@@ -224,7 +223,7 @@ export const FlashcardDetailPanel = ({
                   type="button"
                   onClick={handleRenameSave}
                   disabled={isRenaming}
-                  className="inline-flex items-center justify-center rounded-md bg-white px-2 py-1.5 text-emerald-800 hover:bg-emerald-50 disabled:opacity-60"
+                  className="inline-flex items-center justify-center rounded-md bg-white px-2 py-1.5 text-indigo-800 hover:bg-indigo-50 disabled:opacity-60"
                 >
                   <FiCheck size={14} />
                 </button>
@@ -275,7 +274,7 @@ export const FlashcardDetailPanel = ({
               <button
                 type="button"
                 onClick={startStudyMode}
-                className="rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-50"
+                className="rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-indigo-800 hover:bg-indigo-50"
               >
                 Start Study
               </button>
@@ -320,16 +319,16 @@ export const FlashcardDetailPanel = ({
                   </button>
                 </div>
               </div>
-              <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+              <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-300"
+                  className="h-full rounded-full bg-linear-to-r from-indigo-500 to-violet-500 transition-all duration-300"
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>
             </div>
 
             {currentCard ? (
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm space-y-4">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span
@@ -348,9 +347,13 @@ export const FlashcardDetailPanel = ({
                   <button
                     type="button"
                     onClick={() => setIsAnswerVisible((prev) => !prev)}
-                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
+                    className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
                   >
-                    {isAnswerVisible ? <FiEyeOff size={13} /> : <FiEye size={13} />}
+                    {isAnswerVisible ? (
+                      <FiEyeOff size={13} />
+                    ) : (
+                      <FiEye size={13} />
+                    )}
                     {isAnswerVisible ? "Hide Answer" : "Reveal Answer"}
                   </button>
                 </div>
@@ -363,19 +366,19 @@ export const FlashcardDetailPanel = ({
                     <MarkdownBlock content={currentCard.front} />
                   </div>
 
-                  <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 min-h-[10rem]">
-                    <p className="text-xs uppercase tracking-wide text-emerald-700 font-semibold mb-2">
+                  <div className="rounded-xl border border-indigo-200 bg-indigo-50/50 p-4 min-h-40">
+                    <p className="text-xs uppercase tracking-wide text-indigo-700 font-semibold mb-2">
                       Answer
                     </p>
                     {isAnswerVisible ? (
                       <MarkdownBlock content={currentCard.back} />
                     ) : (
-                      <div className="h-full rounded-lg border border-dashed border-emerald-300 bg-white/70 p-4 flex items-center justify-center text-center">
+                      <div className="h-full rounded-lg border border-dashed border-indigo-300 bg-white/70 p-4 flex items-center justify-center text-center">
                         <div>
-                          <p className="text-sm font-semibold text-emerald-800">
+                          <p className="text-sm font-semibold text-indigo-800">
                             Answer Hidden
                           </p>
-                          <p className="text-xs text-slate-600 mt-1">
+                          <p className="text-xs text-slate-500 mt-1">
                             Click "Reveal Answer" to show it.
                           </p>
                         </div>
@@ -398,7 +401,7 @@ export const FlashcardDetailPanel = ({
                     {currentCard.tags.map((tag) => (
                       <span
                         key={`${currentCard.id}-${tag}`}
-                        className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-700"
+                        className="rounded-full bg-indigo-100 px-2 py-0.5 text-[11px] font-medium text-indigo-700"
                       >
                         #{tag}
                       </span>
@@ -423,7 +426,7 @@ export const FlashcardDetailPanel = ({
                   <button
                     type="button"
                     onClick={() => setIsAnswerVisible((prev) => !prev)}
-                    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+                    className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
                   >
                     {isAnswerVisible ? "Hide Answer" : "Reveal Answer"}
                   </button>
@@ -431,7 +434,9 @@ export const FlashcardDetailPanel = ({
                   <button
                     type="button"
                     onClick={() => {
-                      setPosition((prev) => Math.min(prev + 1, cards.length - 1));
+                      setPosition((prev) =>
+                        Math.min(prev + 1, cards.length - 1),
+                      );
                       setIsAnswerVisible(false);
                     }}
                     disabled={safePosition >= cards.length - 1}
@@ -455,7 +460,9 @@ export const FlashcardDetailPanel = ({
                 <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-1">
                   Cards
                 </p>
-                <p className="text-lg font-semibold text-slate-800">{cards.length}</p>
+                <p className="text-lg font-semibold text-slate-800">
+                  {cards.length}
+                </p>
               </div>
               <div className="rounded-xl border border-slate-200 bg-white p-4">
                 <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-1">
@@ -475,7 +482,8 @@ export const FlashcardDetailPanel = ({
               </div>
             </div>
 
-            {(flashcardSet.description || flashcardSet.generationInstruction) && (
+            {(flashcardSet.description ||
+              flashcardSet.generationInstruction) && (
               <div className="rounded-xl border border-slate-200 bg-white p-4 space-y-3">
                 {flashcardSet.description && (
                   <div>
@@ -490,7 +498,9 @@ export const FlashcardDetailPanel = ({
                     <p className="text-xs uppercase tracking-wide text-slate-500 font-semibold mb-1">
                       Instruction
                     </p>
-                    <MarkdownBlock content={flashcardSet.generationInstruction} />
+                    <MarkdownBlock
+                      content={flashcardSet.generationInstruction}
+                    />
                   </div>
                 )}
               </div>
@@ -523,7 +533,7 @@ export const FlashcardDetailPanel = ({
                 <button
                   type="button"
                   onClick={startStudyMode}
-                  className="rounded-md bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-emerald-700"
+                  className="rounded-md bg-indigo-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-indigo-700"
                 >
                   Study This Set
                 </button>
@@ -576,4 +586,3 @@ export const FlashcardDetailPanel = ({
     </div>
   );
 };
-

@@ -1,12 +1,5 @@
 import { useState, type FormEvent } from "react";
-import {
-  FiChevronDown,
-  FiChevronUp,
-  FiFeather,
-  FiSearch,
-  FiSettings,
-  FiZap,
-} from "react-icons/fi";
+import { FiChevronDown, FiChevronUp, FiZap } from "react-icons/fi";
 import type { CreateFlashcardSetRequest } from "../../../lib/api/flashcard.service";
 
 interface FlashcardCreatePanelProps {
@@ -20,35 +13,27 @@ interface FlashcardCreatePanelProps {
 
 interface CreateFormState {
   title: string;
-  description: string;
   numberOfCards: number;
   focusAreasText: string;
   specialInstruction: string;
-  includeFormulas: boolean;
-  includeExamples: boolean;
-  useVectorSearch: boolean;
-  searchQuery: string;
-  chunkLimit: number;
 }
 
 const INITIAL_STATE: CreateFormState = {
   title: "",
-  description: "",
-  numberOfCards: 24,
+  numberOfCards: 15,
   focusAreasText: "",
   specialInstruction: "",
-  includeFormulas: true,
-  includeExamples: true,
-  useVectorSearch: true,
-  searchQuery: "",
-  chunkLimit: 40,
 };
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
-const safeNumber = (value: number, min: number, max: number, fallback: number) =>
-  Number.isFinite(value) ? clamp(value, min, max) : fallback;
+const safeNumber = (
+  value: number,
+  min: number,
+  max: number,
+  fallback: number,
+) => (Number.isFinite(value) ? clamp(value, min, max) : fallback);
 
 const toFocusAreas = (value: string): string[] =>
   value
@@ -81,241 +66,133 @@ export const FlashcardCreatePanel = ({
 
     onSubmit({
       title: formState.title.trim() || undefined,
-      description: formState.description.trim() || undefined,
       numberOfCards: safeNumber(
         formState.numberOfCards,
         5,
-        100,
+        50,
         INITIAL_STATE.numberOfCards,
       ),
       focusAreas: toFocusAreas(formState.focusAreasText),
       specialInstruction: formState.specialInstruction.trim() || undefined,
-      includeFormulas: formState.includeFormulas,
-      includeExamples: formState.includeExamples,
-      useVectorSearch: formState.useVectorSearch,
-      searchQuery:
-        formState.useVectorSearch && formState.searchQuery.trim()
-          ? formState.searchQuery.trim()
-          : undefined,
-      chunkLimit: safeNumber(
-        formState.chunkLimit,
-        8,
-        120,
-        INITIAL_STATE.chunkLimit,
-      ),
+      includeFormulas: true,
+      includeExamples: true,
+      useVectorSearch: true,
+      chunkLimit: 3,
     });
   };
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
       <button
         type="button"
         onClick={onToggle}
-        className="w-full px-4 py-3 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-colors"
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors"
       >
-        <div className="flex items-center gap-2 text-slate-800">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
-            <FiZap size={16} />
+        <div className="flex items-center gap-2.5 text-slate-800">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
+            <FiZap size={14} />
           </span>
           <div className="text-left">
-            <p className="text-sm font-semibold">Generate Flashcard Set</p>
-            <p className="text-xs text-slate-600">
-              Build exam-focused cards with custom controls
-            </p>
+            <p className="text-sm font-semibold">Generate Flashcards</p>
           </div>
         </div>
-        <span className="text-slate-500">
-          {isOpen ? <FiChevronUp size={18} /> : <FiChevronDown size={18} />}
+        <span className="text-slate-400">
+          {isOpen ? <FiChevronUp size={16} /> : <FiChevronDown size={16} />}
         </span>
       </button>
 
       {isOpen && (
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        <form onSubmit={handleSubmit} className="px-4 pb-4 space-y-3">
           {disabled && disableReason && (
             <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
               {disableReason}
             </div>
           )}
 
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-              Title (Optional)
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-slate-600">
+              Title <span className="text-slate-400">(optional)</span>
             </label>
             <input
               type="text"
               value={formState.title}
               onChange={(event) => updateField("title", event.target.value)}
-              placeholder="Set title"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              placeholder="e.g., Chapter 5 Key Terms"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 bg-slate-50/50"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-              Description (Optional)
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-slate-600">
+              Number of Cards
             </label>
-            <textarea
-              rows={2}
-              value={formState.description}
-              onChange={(event) => updateField("description", event.target.value)}
-              placeholder="Short set summary"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            <input
+              type="number"
+              min={5}
+              max={50}
+              value={formState.numberOfCards}
+              onChange={(event) =>
+                updateField(
+                  "numberOfCards",
+                  safeNumber(
+                    Number(event.target.value),
+                    5,
+                    50,
+                    INITIAL_STATE.numberOfCards,
+                  ),
+                )
+              }
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 bg-slate-50/50"
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                Number of Cards
-              </label>
-              <div className="flex items-center gap-2 rounded-lg border border-slate-300 px-2 py-1.5">
-                <FiFeather className="text-slate-500" size={14} />
-                <input
-                  type="number"
-                  min={5}
-                  max={100}
-                  value={formState.numberOfCards}
-                  onChange={(event) =>
-                    updateField(
-                      "numberOfCards",
-                      safeNumber(
-                        Number(event.target.value),
-                        5,
-                        100,
-                        INITIAL_STATE.numberOfCards,
-                      ),
-                    )
-                  }
-                  className="w-full bg-transparent text-sm focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                Chunk Limit
-              </label>
-              <div className="flex items-center gap-2 rounded-lg border border-slate-300 px-2 py-1.5">
-                <FiSettings className="text-slate-500" size={14} />
-                <input
-                  type="number"
-                  min={8}
-                  max={120}
-                  value={formState.chunkLimit}
-                  onChange={(event) =>
-                    updateField(
-                      "chunkLimit",
-                      safeNumber(
-                        Number(event.target.value),
-                        8,
-                        120,
-                        INITIAL_STATE.chunkLimit,
-                      ),
-                    )
-                  }
-                  className="w-full bg-transparent text-sm focus:outline-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-              Focus Areas
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-slate-600">
+              Focus Areas{" "}
+              <span className="text-slate-400">
+                (optional, comma-separated)
+              </span>
             </label>
-            <textarea
-              rows={2}
+            <input
+              type="text"
               value={formState.focusAreasText}
-              onChange={(event) => updateField("focusAreasText", event.target.value)}
-              placeholder="Derivatives, Integration rules, Optimization"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              onChange={(event) =>
+                updateField("focusAreasText", event.target.value)
+              }
+              placeholder="e.g., Derivatives, Integration, Limits"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 bg-slate-50/50"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-              Special Instruction
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-slate-600">
+              Special Instruction{" "}
+              <span className="text-slate-400">(optional)</span>
             </label>
             <textarea
-              rows={3}
+              rows={2}
               value={formState.specialInstruction}
               onChange={(event) =>
                 updateField("specialInstruction", event.target.value)
               }
-              placeholder="Focus on exam-level formulas and common mistakes."
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              placeholder="e.g., Focus on common exam questions"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 bg-slate-50/50 resize-none"
             />
-          </div>
-
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
-              <FiSettings size={14} />
-              Content Strategy
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <label className="inline-flex items-center gap-2 text-xs text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={formState.includeFormulas}
-                  onChange={(event) =>
-                    updateField("includeFormulas", event.target.checked)
-                  }
-                  className="h-4 w-4 accent-emerald-600"
-                />
-                Include formulas
-              </label>
-              <label className="inline-flex items-center gap-2 text-xs text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={formState.includeExamples}
-                  onChange={(event) =>
-                    updateField("includeExamples", event.target.checked)
-                  }
-                  className="h-4 w-4 accent-emerald-600"
-                />
-                Include examples
-              </label>
-              <label className="inline-flex items-center gap-2 text-xs text-slate-700 sm:col-span-2">
-                <input
-                  type="checkbox"
-                  checked={formState.useVectorSearch}
-                  onChange={(event) =>
-                    updateField("useVectorSearch", event.target.checked)
-                  }
-                  className="h-4 w-4 accent-emerald-600"
-                />
-                Use vector retrieval
-              </label>
-            </div>
-
-            {formState.useVectorSearch && (
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                  Search Query
-                </label>
-                <div className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-2 py-1.5">
-                  <FiSearch className="text-slate-500" size={14} />
-                  <input
-                    type="text"
-                    value={formState.searchQuery}
-                    onChange={(event) =>
-                      updateField("searchQuery", event.target.value)
-                    }
-                    placeholder="Optional retrieval query"
-                    className="w-full bg-transparent text-sm focus:outline-none"
-                  />
-                </div>
-              </div>
-            )}
           </div>
 
           <button
             type="submit"
             disabled={disabled || isSubmitting}
-            className="w-full rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:from-emerald-700 hover:to-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-emerald-600/20 transition-all hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isSubmitting ? "Generating Flashcards..." : "Generate Flashcard Set"}
+            {isSubmitting ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Generating...
+              </span>
+            ) : (
+              "Generate Flashcards"
+            )}
           </button>
         </form>
       )}

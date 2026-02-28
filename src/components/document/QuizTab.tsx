@@ -176,35 +176,34 @@ export const QuizTab = ({
   }, [attemptDetailsQuery.error]);
 
   return (
-    <div className="h-full overflow-y-auto bg-slate-50 p-4 sm:p-5">
+    <div className="h-full overflow-y-auto bg-slate-50/50 p-4 sm:p-5">
       <div className="mx-auto max-w-7xl space-y-4">
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4 sm:p-5">
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">
+              <h2 className="text-base font-semibold text-slate-800">
                 Quiz Studio
               </h2>
-              <p className="text-sm text-slate-600 mt-0.5">
-                Build targeted quizzes from this document and review every
-                attempt with AI-generated insights.
+              <p className="text-xs text-slate-500 mt-0.5">
+                Build quizzes from this document and review attempts
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <div className="rounded-xl border border-cyan-200 bg-cyan-50 px-3 py-2">
-                <p className="text-[11px] uppercase tracking-wide text-cyan-700 font-semibold">
+              <div className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5">
+                <p className="text-[10px] uppercase tracking-wide text-blue-600 font-semibold">
                   Quizzes
                 </p>
-                <p className="text-sm font-semibold text-cyan-900 flex items-center gap-1">
-                  <FiClipboard size={14} />
+                <p className="text-sm font-semibold text-blue-800 flex items-center gap-1">
+                  <FiClipboard size={13} />
                   {quizzesQuery.data?.pagination.total ?? quizzes.length}
                 </p>
               </div>
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2">
-                <p className="text-[11px] uppercase tracking-wide text-emerald-700 font-semibold">
+              <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5">
+                <p className="text-[10px] uppercase tracking-wide text-emerald-600 font-semibold">
                   Attempts
                 </p>
-                <p className="text-sm font-semibold text-emerald-900 flex items-center gap-1">
-                  <FiTrendingUp size={14} />
+                <p className="text-sm font-semibold text-emerald-800 flex items-center gap-1">
+                  <FiTrendingUp size={13} />
                   {attemptsQuery.data?.count ?? 0}
                 </p>
               </div>

@@ -34,13 +34,13 @@ const DocumentViewerContent = ({
 }: DocumentViewerContentProps) => {
   return (
     <div
-      className={`h-full gap-4 sm:gap-5 ${
+      className={`h-full gap-3 sm:gap-4 ${
         panelState === "both" ? "flex flex-col lg:flex-row" : "flex"
       }`}
     >
       {panelState !== "content" && (
         <div
-          className={`min-h-0 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden transition-all duration-300 ${
+          className={`min-h-0 rounded-xl border border-slate-200/80 bg-white shadow-sm overflow-hidden transition-all duration-300 ${
             panelState === "both"
               ? "w-full lg:w-[52%] h-1/2 lg:h-full"
               : "w-full h-full"

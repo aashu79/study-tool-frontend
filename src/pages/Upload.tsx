@@ -9,12 +9,17 @@ import {
   FiFile,
   FiCheck,
   FiX,
+  FiAlertCircle,
 } from "react-icons/fi";
 import { InboxOutlined, CloudUploadOutlined } from "@ant-design/icons";
 import { useUploadFiles, useFiles } from "../lib/hooks/useFile";
 import type { UploadFile } from "antd";
+import toast from "react-hot-toast";
 
 const { Dragger } = AntUpload;
+
+const MAX_FILE_SIZE_BYTES = 1 * 1024 * 1024; // 1 MB
+const MAX_FILE_SIZE_LABEL = "1 MB";
 
 const UploadPage = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -40,6 +45,17 @@ const UploadPage = () => {
   const handleUpload = () => {
     if (fileList.length === 0) return;
 
+    // Validate file sizes before uploading
+    const oversizedFiles = fileList.filter(
+      (file) => (file.size || 0) > MAX_FILE_SIZE_BYTES,
+    );
+    if (oversizedFiles.length > 0) {
+      toast.error(
+        `${oversizedFiles.length} file(s) exceed the ${MAX_FILE_SIZE_LABEL} limit. Please remove them first.`,
+      );
+      return;
+    }
+
     const files = fileList.map((file) => file.originFileObj as File);
     uploadMutation.mutate(files, {
       onSuccess: () => {
@@ -54,28 +70,25 @@ const UploadPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-5xl mx-auto space-y-5">
         {/* HERO SECTION */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 p-6 md:p-8 text-white shadow-xl">
-          {/* Subtle grid overlay */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-
-          {/* Blur blobs */}
-          <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/20 rounded-full blur-[120px]" />
-          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-cyan-300/30 rounded-full blur-[140px]" />
+        <div className="relative overflow-hidden rounded-xl bg-linear-to-br from-slate-900 via-indigo-900 to-violet-900 p-6 text-white shadow-lg">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(139,92,246,0.15),transparent_50%)]" />
+          <div className="absolute -top-20 -left-20 w-72 h-72 bg-indigo-500/10 rounded-full blur-[100px]" />
+          <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-violet-500/10 rounded-full blur-[100px]" />
 
           <div className="relative z-10">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
-                <CloudUploadOutlined className="text-3xl" />
+            <div className="flex items-start gap-3">
+              <div className="p-2.5 bg-white/10 backdrop-blur-sm rounded-lg">
+                <CloudUploadOutlined className="text-2xl" />
               </div>
               <div className="flex-1">
-                <h1 className="text-2xl md:text-3xl font-black mb-2">
+                <h1 className="text-xl md:text-2xl font-bold mb-1">
                   Upload Study Materials
                 </h1>
-                <p className="text-white/90 text-sm md:text-base font-medium">
-                  Upload your notes, PDFs, presentations, or images and let
-                  StudyAI transform them into powerful study tools.
+                <p className="text-white/70 text-sm font-medium">
+                  Upload your notes, PDFs, or presentations. Max file size:{" "}
+                  {MAX_FILE_SIZE_LABEL}.
                 </p>
               </div>
             </div>
@@ -84,35 +97,52 @@ const UploadPage = () => {
 
         {/* UPLOAD SECTION */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="p-6">
+          <div className="p-5">
             <Dragger
               multiple
               fileList={fileList}
-              onChange={({ fileList: newFileList }) => setFileList(newFileList)}
+              onChange={({ fileList: newFileList }) => {
+                // Filter out files that exceed the size limit
+                const validFiles: UploadFile[] = [];
+                const rejected: string[] = [];
+                for (const file of newFileList) {
+                  if ((file.size || 0) > MAX_FILE_SIZE_BYTES) {
+                    rejected.push(file.name);
+                  } else {
+                    validFiles.push(file);
+                  }
+                }
+                if (rejected.length > 0) {
+                  toast.error(
+                    `${rejected.join(", ")} ${rejected.length === 1 ? "exceeds" : "exceed"} the ${MAX_FILE_SIZE_LABEL} limit`,
+                  );
+                }
+                setFileList(validFiles);
+              }}
               beforeUpload={() => false}
-              className="!border-2 !border-dashed !border-teal-300 hover:!border-teal-500 !bg-gradient-to-br !from-teal-50/50 !to-cyan-50/50 !rounded-xl transition-all"
+              className="border-2! border-dashed! border-indigo-200! hover:border-indigo-400! bg-linear-to-br! from-indigo-50/30! to-violet-50/30! rounded-xl! transition-all"
               showUploadList={false}
             >
-              <div className="py-8">
-                <p className="ant-upload-drag-icon mb-4">
-                  <InboxOutlined className="text-teal-600 text-6xl" />
+              <div className="py-6">
+                <p className="ant-upload-drag-icon mb-3">
+                  <InboxOutlined className="text-indigo-500 text-5xl" />
                 </p>
-                <p className="ant-upload-text font-bold text-slate-800 text-xl mb-2">
+                <p className="ant-upload-text font-semibold text-slate-800 text-lg mb-1">
                   Click or drag files to upload
                 </p>
-                <p className="ant-upload-hint text-slate-600 font-medium px-4">
-                  Support for single or bulk upload. Accepts PDF, DOCX, PPT,
-                  TXT, JPG, PNG and more.
+                <p className="ant-upload-hint text-slate-500 text-sm font-medium px-4">
+                  PDF, DOCX, PPT, TXT, JPG, PNG — max {MAX_FILE_SIZE_LABEL} per
+                  file
                 </p>
-                <div className="mt-4 flex flex-wrap gap-2 justify-center">
-                  <span className="px-3 py-1 bg-white rounded-full text-xs font-semibold text-slate-600 border border-slate-200">
-                    📄 Documents
+                <div className="mt-3 flex flex-wrap gap-1.5 justify-center">
+                  <span className="px-2.5 py-1 bg-white rounded-full text-xs font-medium text-slate-500 border border-slate-200">
+                    Documents
                   </span>
-                  <span className="px-3 py-1 bg-white rounded-full text-xs font-semibold text-slate-600 border border-slate-200">
-                    🖼️ Images
+                  <span className="px-2.5 py-1 bg-white rounded-full text-xs font-medium text-slate-500 border border-slate-200">
+                    Images
                   </span>
-                  <span className="px-3 py-1 bg-white rounded-full text-xs font-semibold text-slate-600 border border-slate-200">
-                    📊 Presentations
+                  <span className="px-2.5 py-1 bg-white rounded-full text-xs font-medium text-slate-500 border border-slate-200">
+                    Presentations
                   </span>
                 </div>
               </div>
@@ -120,58 +150,74 @@ const UploadPage = () => {
 
             {/* FILE LIST */}
             {fileList.length > 0 && (
-              <div className="mt-6 space-y-3">
+              <div className="mt-5 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-slate-800">
+                  <h3 className="font-semibold text-slate-800 text-sm">
                     Selected Files ({fileList.length})
                   </h3>
                   <Button
                     size="small"
                     danger
                     onClick={() => setFileList([])}
-                    icon={<FiX size={14} />}
+                    icon={<FiX size={13} />}
                   >
                     Clear All
                   </Button>
                 </div>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {fileList.map((file) => (
-                    <div
-                      key={file.uid}
-                      className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200"
-                    >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        {getFileIcon(file.type || "")}
-                        <div className="min-w-0 flex-1">
-                          <p className="font-medium text-slate-800 text-sm truncate">
-                            {file.name}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {((file.size || 0) / 1024).toFixed(1)} KB
-                          </p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => removeFile(file)}
-                        className="ml-2 p-1 hover:bg-red-100 rounded text-red-600 transition-colors flex-shrink-0"
+                <div className="space-y-1.5 max-h-56 overflow-y-auto">
+                  {fileList.map((file) => {
+                    const fileSize = file.size || 0;
+                    const isOversized = fileSize > MAX_FILE_SIZE_BYTES;
+                    return (
+                      <div
+                        key={file.uid}
+                        className={`flex items-center justify-between p-2.5 rounded-lg border ${
+                          isOversized
+                            ? "bg-red-50 border-red-200"
+                            : "bg-slate-50 border-slate-100"
+                        }`}
                       >
-                        <FiX size={16} />
-                      </button>
-                    </div>
-                  ))}
+                        <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                          {getFileIcon(file.type || "")}
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-slate-800 text-sm truncate">
+                              {file.name}
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-xs text-slate-500">
+                                {(fileSize / 1024).toFixed(1)} KB
+                              </p>
+                              {isOversized && (
+                                <span className="flex items-center gap-1 text-xs text-red-600 font-medium">
+                                  <FiAlertCircle size={11} />
+                                  Exceeds {MAX_FILE_SIZE_LABEL}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => removeFile(file)}
+                          className="ml-2 p-1 hover:bg-red-100 rounded text-red-500 transition-colors shrink-0"
+                        >
+                          <FiX size={15} />
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
             {fileList.length > 0 && (
-              <div className="mt-6 flex justify-end">
+              <div className="mt-5 flex justify-end">
                 <Button
                   type="primary"
                   size="large"
                   icon={<FiUpload />}
                   onClick={handleUpload}
                   loading={uploadMutation.isPending}
-                  className="!bg-gradient-to-r !from-emerald-600 !to-teal-600 hover:!from-emerald-700 hover:!to-teal-700 !rounded-xl !h-12 !px-8 !font-bold !shadow-lg hover:!shadow-xl transition-all"
+                  className="bg-indigo-600! hover:bg-indigo-700! rounded-lg! h-11! px-6! font-semibold! shadow-sm! shadow-indigo-600/20! transition-all"
                 >
                   Upload {fileList.length} File{fileList.length > 1 ? "s" : ""}
                 </Button>
@@ -181,16 +227,16 @@ const UploadPage = () => {
         </div>
 
         {/* LATEST UPLOADED FILES */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="p-2 bg-teal-100 rounded-lg">
-              <FiCheck className="text-teal-600 text-xl" />
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+          <div className="flex items-center gap-2.5 mb-5">
+            <div className="p-1.5 bg-emerald-100 rounded-lg">
+              <FiCheck className="text-emerald-600" size={16} />
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 text-lg">
-                Latest Uploaded Files
+              <h3 className="font-semibold text-slate-800 text-sm">
+                Latest Uploads
               </h3>
-              <p className="text-sm text-slate-500">
+              <p className="text-xs text-slate-500">
                 Your most recent study materials
               </p>
             </div>
@@ -219,24 +265,24 @@ const UploadPage = () => {
         </div>
 
         {/* FILE TYPE CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <FileTypeCard
-            icon={<FiFileText className="text-emerald-600" size={28} />}
+            icon={<FiFileText className="text-indigo-600" size={22} />}
             label="Documents"
             description="PDF, DOCX, TXT, RTF"
-            color="from-emerald-50 to-teal-50"
+            color="from-indigo-50 to-violet-50"
           />
           <FileTypeCard
-            icon={<FiImage className="text-blue-600" size={28} />}
+            icon={<FiImage className="text-blue-600" size={22} />}
             label="Images"
             description="JPG, PNG, GIF, SVG"
             color="from-blue-50 to-cyan-50"
           />
           <FileTypeCard
-            icon={<FiFile className="text-purple-600" size={28} />}
+            icon={<FiFile className="text-violet-600" size={22} />}
             label="Other Files"
             description="PPT, XLS, ZIP, CSV"
-            color="from-purple-50 to-pink-50"
+            color="from-violet-50 to-pink-50"
           />
         </div>
       </div>
@@ -259,12 +305,12 @@ const FileTypeCard = ({
 }: FileTypeCardProps) => {
   return (
     <div
-      className={`bg-gradient-to-br ${color} border border-slate-200 rounded-xl p-4 flex items-center gap-4`}
+      className={`bg-linear-to-br ${color} border border-slate-200/80 rounded-lg p-3.5 flex items-center gap-3`}
     >
-      <div className="flex-shrink-0">{icon}</div>
+      <div className="shrink-0">{icon}</div>
       <div>
-        <h3 className="font-bold text-slate-800 mb-1">{label}</h3>
-        <p className="text-xs text-slate-600">{description}</p>
+        <h3 className="font-semibold text-slate-800 text-sm mb-0.5">{label}</h3>
+        <p className="text-xs text-slate-500">{description}</p>
       </div>
     </div>
   );

@@ -22,6 +22,7 @@ export const useStudySession = (fileId: string | undefined) => {
   //   const { triggerProcessing } = useProcessing();
   const [studySessionId, setStudySessionId] = useState<string | null>(null);
   const [isSessionEnding, setIsSessionEnding] = useState(false);
+  const [isManuallyStarting, setIsManuallyStarting] = useState(false);
   const [isSessionBootstrapLoading, setIsSessionBootstrapLoading] =
     useState(false);
 
@@ -29,6 +30,7 @@ export const useStudySession = (fileId: string | undefined) => {
   const sessionIdRef = useRef<string | null>(null);
   const fileIdRef = useRef<string | null>(fileId ?? null);
   const endingSessionRef = useRef(false);
+  const isStartingRef = useRef(false);
 
   const persistStudySessionId = useCallback(
     (currentFileId: string, currentSessionId: string) => {
@@ -191,8 +193,13 @@ export const useStudySession = (fileId: string | undefined) => {
   }, [fileId]);
 
   const startStudySession = useCallback(async () => {
-    if (!fileId || startStudySessionMutation.isPending) {
+    if (!fileId || isStartingRef.current) {
       return;
+    }
+
+    isStartingRef.current = true;
+    if (isMountedRef.current) {
+      setIsManuallyStarting(true);
     }
 
     try {
@@ -229,6 +236,11 @@ export const useStudySession = (fileId: string | undefined) => {
         err?.message ||
         "Failed to start study session";
       toast.error(errorMessage);
+    } finally {
+      isStartingRef.current = false;
+      if (isMountedRef.current) {
+        setIsManuallyStarting(false);
+      }
     }
   }, [
     fileId,
@@ -354,7 +366,8 @@ export const useStudySession = (fileId: string | undefined) => {
 
   return {
     studySessionId,
-    isSessionStarting: startStudySessionMutation.isPending,
+    isSessionStarting:
+      startStudySessionMutation.isPending || isManuallyStarting,
     isSessionEnding,
     isSessionBootstrapLoading,
     logStudyEvent,

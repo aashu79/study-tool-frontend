@@ -35,7 +35,10 @@ const getProcessingBlockingMessage = (status?: string) => {
   return "Document is not ready yet. Please process it before generating flashcards.";
 };
 
-export const FlashcardsTab = ({ fileId, processingStatus }: FlashcardsTabProps) => {
+export const FlashcardsTab = ({
+  fileId,
+  processingStatus,
+}: FlashcardsTabProps) => {
   const queryClient = useQueryClient();
   const {
     createFlashcardSetFromFile,
@@ -50,7 +53,8 @@ export const FlashcardsTab = ({ fileId, processingStatus }: FlashcardsTabProps) 
   const [selectedSetId, setSelectedSetId] = useState<string | null>(null);
   const [createResetSignal, setCreateResetSignal] = useState(0);
 
-  const disableGeneration = !!processingStatus && processingStatus !== "COMPLETED";
+  const disableGeneration =
+    !!processingStatus && processingStatus !== "COMPLETED";
   const disableReason = getProcessingBlockingMessage(processingStatus);
 
   const setsQuery = useQuery({
@@ -80,12 +84,17 @@ export const FlashcardsTab = ({ fileId, processingStatus }: FlashcardsTabProps) 
       setSelectedSetId(createdSet.id);
       setPage(1);
 
-      queryClient.setQueryData(["flashcardSetDetails", createdSet.id], createdSet);
+      queryClient.setQueryData(
+        ["flashcardSetDetails", createdSet.id],
+        createdSet,
+      );
       queryClient.invalidateQueries({ queryKey: ["flashcardSets", fileId] });
     },
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : "Failed to generate flashcards";
+        error instanceof Error
+          ? error.message
+          : "Failed to generate flashcards";
       toast.error(message);
     },
   });
@@ -95,7 +104,10 @@ export const FlashcardsTab = ({ fileId, processingStatus }: FlashcardsTabProps) 
       renameFlashcardSet(setId, title),
     onSuccess: (updatedSet) => {
       toast.success("Flashcard set renamed");
-      queryClient.setQueryData(["flashcardSetDetails", updatedSet.id], updatedSet);
+      queryClient.setQueryData(
+        ["flashcardSetDetails", updatedSet.id],
+        updatedSet,
+      );
 
       queryClient.setQueriesData(
         { queryKey: ["flashcardSets", fileId] },
@@ -141,7 +153,9 @@ export const FlashcardsTab = ({ fileId, processingStatus }: FlashcardsTabProps) 
             return oldData;
           }
 
-          const filtered = oldData.data.filter((set) => set.id !== deletedSetId);
+          const filtered = oldData.data.filter(
+            (set) => set.id !== deletedSetId,
+          );
           return {
             ...oldData,
             data: filtered,
@@ -153,12 +167,16 @@ export const FlashcardsTab = ({ fileId, processingStatus }: FlashcardsTabProps) 
         },
       );
 
-      queryClient.removeQueries({ queryKey: ["flashcardSetDetails", deletedSetId] });
+      queryClient.removeQueries({
+        queryKey: ["flashcardSetDetails", deletedSetId],
+      });
       queryClient.invalidateQueries({ queryKey: ["flashcardSets", fileId] });
     },
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : "Failed to delete flashcard set";
+        error instanceof Error
+          ? error.message
+          : "Failed to delete flashcard set";
       toast.error(message);
     },
   });
@@ -175,40 +193,42 @@ export const FlashcardsTab = ({ fileId, processingStatus }: FlashcardsTabProps) 
 
   const visibleCardsCount = useMemo(
     () =>
-      sets.reduce((total, set) => total + (set.cardsCount ?? set.cardCount ?? 0), 0),
+      sets.reduce(
+        (total, set) => total + (set.cardsCount ?? set.cardCount ?? 0),
+        0,
+      ),
     [sets],
   );
 
   return (
-    <div className="h-full overflow-y-auto bg-slate-50 p-4 sm:p-5">
+    <div className="h-full overflow-y-auto bg-slate-50/50 p-4 sm:p-5">
       <div className="mx-auto max-w-7xl space-y-4">
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4 sm:p-5">
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">
+              <h2 className="text-base font-semibold text-slate-800">
                 Flashcard Studio
               </h2>
-              <p className="text-sm text-slate-600 mt-0.5">
-                Generate focused card sets, review all cards, and study with an
-                interactive mode.
+              <p className="text-xs text-slate-500 mt-0.5">
+                Generate focused card sets and study with interactive mode
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2">
-                <p className="text-[11px] uppercase tracking-wide text-emerald-700 font-semibold">
+              <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5">
+                <p className="text-[10px] uppercase tracking-wide text-emerald-600 font-semibold">
                   Sets
                 </p>
-                <p className="text-sm font-semibold text-emerald-900 flex items-center gap-1">
-                  <FiLayers size={14} />
+                <p className="text-sm font-semibold text-emerald-800 flex items-center gap-1">
+                  <FiLayers size={13} />
                   {setsQuery.data?.pagination.total ?? sets.length}
                 </p>
               </div>
-              <div className="rounded-xl border border-cyan-200 bg-cyan-50 px-3 py-2">
-                <p className="text-[11px] uppercase tracking-wide text-cyan-700 font-semibold">
+              <div className="rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1.5">
+                <p className="text-[10px] uppercase tracking-wide text-blue-600 font-semibold">
                   Cards
                 </p>
-                <p className="text-sm font-semibold text-cyan-900 flex items-center gap-1">
-                  <FiTarget size={14} />
+                <p className="text-sm font-semibold text-blue-800 flex items-center gap-1">
+                  <FiTarget size={13} />
                   {visibleCardsCount}
                 </p>
               </div>

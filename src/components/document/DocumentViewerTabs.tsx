@@ -12,8 +12,8 @@ const DocumentViewerTabs = ({
   onTabChange,
 }: DocumentViewerTabsProps) => {
   return (
-    <div className="rounded-2xl bg-white/95 backdrop-blur-sm border border-slate-200 p-2 shadow-lg">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+    <div className="rounded-xl bg-white border border-slate-200/80 p-1 shadow-sm">
+      <div className="flex gap-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -22,32 +22,22 @@ const DocumentViewerTabs = ({
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`group relative overflow-hidden rounded-xl border px-4 py-3 text-left transition-all ${
+              className={`group relative flex-1 overflow-hidden rounded-lg px-3 py-2.5 text-center transition-all duration-200 ${
                 isActive
-                  ? `${tab.activeClasses} shadow-md`
-                  : "border-transparent bg-slate-100/80 hover:bg-slate-100 text-slate-600 hover:text-slate-900"
+                  ? `${tab.activeClasses} shadow-sm`
+                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
               }`}
             >
               <div
-                className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${tab.glowClasses} ${
+                className={`absolute inset-x-0 bottom-0 h-0.5 bg-linear-to-r ${tab.glowClasses} ${
                   isActive
                     ? "opacity-100"
-                    : "opacity-0 group-hover:opacity-60 transition-opacity"
+                    : "opacity-0 group-hover:opacity-40 transition-opacity"
                 }`}
               />
-              <div className="flex items-center gap-3">
-                <div
-                  className={`rounded-lg p-2 ${
-                    isActive
-                      ? tab.iconClasses
-                      : "bg-white text-slate-500 group-hover:text-slate-700"
-                  }`}
-                >
-                  <Icon size={16} />
-                </div>
-                <span className="font-semibold text-sm sm:text-base">
-                  {tab.label}
-                </span>
+              <div className="flex items-center justify-center gap-2">
+                <Icon size={15} />
+                <span className="font-semibold text-sm">{tab.label}</span>
               </div>
             </button>
           );

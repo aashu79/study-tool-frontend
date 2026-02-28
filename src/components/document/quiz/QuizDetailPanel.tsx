@@ -136,25 +136,24 @@ export const QuizDetailPanel = ({
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm h-full min-h-[32rem] flex items-center justify-center">
-        <div className="h-10 w-10 rounded-full border-2 border-cyan-600 border-t-transparent animate-spin" />
+      <div className="rounded-xl border border-slate-200/80 bg-white shadow-sm h-full min-h-128 flex items-center justify-center">
+        <div className="h-10 w-10 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
       </div>
     );
   }
 
   if (!quiz) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm h-full min-h-[32rem] flex items-center justify-center p-6">
+      <div className="rounded-xl border border-slate-200/80 bg-white shadow-sm h-full min-h-128 flex items-center justify-center p-6">
         <div className="text-center max-w-sm">
-          <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center">
-            <FiFileText size={24} />
+          <div className="mx-auto mb-3 h-12 w-12 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
+            <FiFileText size={22} />
           </div>
-          <h3 className="text-lg font-semibold text-slate-800 mb-1">
+          <h3 className="text-base font-semibold text-slate-800 mb-1">
             Select a Quiz
           </h3>
-          <p className="text-sm text-slate-600">
-            Pick a quiz from the library to preview questions, start a new
-            attempt, and review your performance insights.
+          <p className="text-sm text-slate-500">
+            Pick a quiz from the library to start an attempt or review results.
           </p>
         </div>
       </div>
@@ -163,19 +162,19 @@ export const QuizDetailPanel = ({
 
   if (loadError) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 h-full min-h-[32rem] flex items-center justify-center p-6">
+      <div className="rounded-xl border border-red-200 bg-red-50 h-full min-h-128 flex items-center justify-center p-6">
         <div className="text-center max-w-md">
-          <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-white text-red-600 flex items-center justify-center">
-            <FiAlertCircle size={24} />
+          <div className="mx-auto mb-3 h-12 w-12 rounded-xl bg-white text-red-500 flex items-center justify-center">
+            <FiAlertCircle size={22} />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-1">
+          <h3 className="text-base font-semibold text-slate-900 mb-1">
             Failed to load quiz details
           </h3>
-          <p className="text-sm text-red-700 mb-4">{loadError}</p>
+          <p className="text-sm text-red-600 mb-4">{loadError}</p>
           <button
             type="button"
             onClick={onRetryQuizDetails}
-            className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700"
+            className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700"
           >
             <FiRefreshCw size={14} />
             Try Again
@@ -186,8 +185,8 @@ export const QuizDetailPanel = ({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden h-full min-h-[32rem] flex flex-col">
-      <div className="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-900 via-slate-800 to-cyan-900 text-white">
+    <div className="rounded-xl border border-slate-200/80 bg-white shadow-sm overflow-hidden h-full min-h-128 flex flex-col">
+      <div className="px-4 py-3 border-b border-slate-200 bg-linear-to-r from-slate-900 via-indigo-900 to-violet-900 text-white">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h3 className="text-lg font-semibold">{quiz.title}</h3>
@@ -221,7 +220,7 @@ export const QuizDetailPanel = ({
                   setAnswers({});
                   onClearAttemptSelection();
                 }}
-                className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-cyan-800 hover:bg-cyan-50"
+                className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-indigo-800 hover:bg-indigo-50"
               >
                 <FiPlayCircle size={14} />
                 Start Attempt
@@ -233,9 +232,9 @@ export const QuizDetailPanel = ({
 
       <div className="flex-1 overflow-y-auto bg-slate-50 p-4 sm:p-5 space-y-4">
         {latestSubmission && latestSubmission.quizId === quiz.id && (
-          <div className="rounded-xl border border-cyan-200 bg-cyan-50 p-4">
+          <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2 text-cyan-800 font-semibold">
+              <div className="flex items-center gap-2 text-indigo-800 font-semibold">
                 <FiTrendingUp size={16} />
                 Latest Attempt Result
               </div>
@@ -255,7 +254,7 @@ export const QuizDetailPanel = ({
               Submitted: {formatDateTime(latestSubmission.createdAt)}
             </p>
             {latestSubmission.insight && (
-              <div className="mt-3 rounded-lg border border-cyan-200 bg-white p-3">
+              <div className="mt-3 rounded-lg border border-indigo-200 bg-white p-3">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">
                   Recommended Actions
                 </p>
@@ -277,7 +276,7 @@ export const QuizDetailPanel = ({
                 type="button"
                 onClick={handleSubmit}
                 disabled={!canSubmit || isSubmitting}
-                className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? "Submitting..." : "Submit Answers"}
               </button>
@@ -307,8 +306,8 @@ export const QuizDetailPanel = ({
                         }
                         className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition-colors ${
                           isSelected
-                            ? "border-cyan-400 bg-cyan-50 text-cyan-900"
-                            : "border-slate-300 bg-white hover:border-cyan-300 hover:bg-cyan-50/40"
+                            ? "border-indigo-400 bg-indigo-50 text-indigo-900"
+                            : "border-slate-300 bg-white hover:border-indigo-300 hover:bg-indigo-50/40"
                         }`}
                       >
                         <span className="font-semibold mr-2">
@@ -370,14 +369,14 @@ export const QuizDetailPanel = ({
               <div className="p-3 space-y-2">
                 {areAttemptsLoading ? (
                   <div className="py-6 flex justify-center">
-                    <div className="h-6 w-6 rounded-full border-2 border-cyan-600 border-t-transparent animate-spin" />
+                    <div className="h-6 w-6 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
                   </div>
                 ) : attemptsError ? (
                   <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
                     {attemptsError}
                   </div>
                 ) : attempts.length === 0 ? (
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-slate-500">
                     No attempts recorded yet.
                   </p>
                 ) : (
@@ -441,7 +440,7 @@ export const QuizDetailPanel = ({
                 <div className="p-4 space-y-3">
                   {areAttemptDetailsLoading ? (
                     <div className="py-5 flex justify-center">
-                      <div className="h-6 w-6 rounded-full border-2 border-cyan-600 border-t-transparent animate-spin" />
+                      <div className="h-6 w-6 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
                     </div>
                   ) : attemptDetailsError ? (
                     <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
@@ -551,8 +550,8 @@ export const QuizDetailPanel = ({
                       </div>
 
                       {attemptDetails.insight && (
-                        <div className="rounded-lg border border-cyan-200 bg-cyan-50 p-4 space-y-3">
-                          <p className="text-sm font-semibold text-cyan-900">
+                        <div className="rounded-lg border border-indigo-200 bg-indigo-50 p-4 space-y-3">
+                          <p className="text-sm font-semibold text-indigo-900">
                             AI Performance Insight
                           </p>
                           <div>

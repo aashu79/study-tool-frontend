@@ -68,15 +68,14 @@ const DocumentViewer = () => {
   }, [documentError]);
 
   useEffect(() => {
-    if (!studySessionId) {
-      return;
+    if (studySessionId || isSessionStarting) {
+      setShowStudySessionPrompt(false);
     }
-    setShowStudySessionPrompt(false);
-  }, [setShowStudySessionPrompt, studySessionId]);
+  }, [setShowStudySessionPrompt, studySessionId, isSessionStarting]);
 
   // Inactivity tracking
   useEffect(() => {
-    if (!studySessionId) {
+    if (!studySessionId && !isSessionStarting) {
       return;
     }
 
@@ -197,7 +196,7 @@ const DocumentViewer = () => {
       window.removeEventListener("focus", handleWindowFocus);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [studySessionId, logDistraction]);
+  }, [studySessionId, isSessionStarting, logDistraction]);
 
   // End session on page unload
   useEffect(() => {
@@ -224,13 +223,17 @@ const DocumentViewer = () => {
   const fileName = documentData?.fileName || "Document";
   const fileUrl = documentData?.fileUrl || "";
   const mimeType = documentData?.mimeType || "application/octet-stream";
-  const isStudySessionActive = Boolean(studySessionId);
+  const isStudySessionActive = Boolean(studySessionId) || isSessionStarting;
 
   if (isDocumentLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mb-4" />
-        <p className="text-slate-600 font-medium">Loading document...</p>
+      <div className="flex flex-col items-center justify-center h-screen bg-linear-to-br from-slate-50 to-indigo-50/30">
+        <div className="relative">
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-indigo-200 border-t-indigo-600" />
+        </div>
+        <p className="text-slate-500 font-medium mt-4 text-sm">
+          Loading document...
+        </p>
       </div>
     );
   }
@@ -244,18 +247,18 @@ const DocumentViewer = () => {
       err?.response?.data?.message || err?.message || "Failed to load document";
 
     return (
-      <div className="flex items-center justify-center h-screen bg-slate-50">
+      <div className="flex items-center justify-center h-screen bg-linear-to-br from-slate-50 to-red-50/20">
         <div className="text-center max-w-md px-6">
-          <div className="p-4 bg-red-100 rounded-full inline-block mb-4">
-            <FiAlertCircle className="text-red-600" size={48} />
+          <div className="p-3.5 bg-red-100 rounded-2xl inline-block mb-4">
+            <FiAlertCircle className="text-red-500" size={40} />
           </div>
-          <h2 className="text-2xl font-semibold text-slate-800 mb-2">
+          <h2 className="text-xl font-semibold text-slate-800 mb-2">
             Error Loading Document
           </h2>
-          <p className="text-slate-600 mb-6">{errorMessage}</p>
+          <p className="text-slate-500 text-sm mb-6">{errorMessage}</p>
           <button
             onClick={handleBackToDashboard}
-            className="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium shadow-sm"
+            className="px-5 py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium text-sm shadow-sm"
           >
             Back to Materials
           </button>
@@ -265,7 +268,7 @@ const DocumentViewer = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-slate-100">
+    <div className="h-screen flex flex-col bg-slate-50">
       <DocumentViewerHeader
         fileName={fileName}
         mimeType={mimeType}
@@ -281,16 +284,16 @@ const DocumentViewer = () => {
       />
 
       {!isStudySessionActive && !isSessionBootstrapLoading && (
-        <div className="px-3 sm:px-6 pt-3">
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <p className="text-sm text-amber-900">
-              Study session is not active. Start one to track learning activity
-              and distractions.
+        <div className="px-3 sm:px-5 pt-2.5">
+          <div className="rounded-lg border border-amber-200/80 bg-linear-to-r from-amber-50 to-orange-50/50 px-4 py-2.5 flex items-center justify-between gap-3">
+            <p className="text-xs text-amber-800">
+              Start a study session to track your learning activity and focus
+              time.
             </p>
             <button
               onClick={handleStartSession}
               disabled={isSessionStarting}
-              className="px-3 py-2 rounded-lg bg-amber-600 text-white text-sm font-medium hover:bg-amber-700 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="shrink-0 px-3 py-1.5 rounded-md bg-amber-600 text-white text-xs font-medium hover:bg-amber-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
             >
               {isSessionStarting ? "Starting..." : "Start Session"}
             </button>
@@ -300,10 +303,10 @@ const DocumentViewer = () => {
 
       {panelState !== "document" && (
         <div
-          className={`px-3 sm:px-6 z-10 ${
+          className={`px-3 sm:px-5 z-10 ${
             isStudySessionActive || isSessionBootstrapLoading
-              ? "-mt-4 sm:-mt-5"
-              : "mt-3"
+              ? "pt-2.5"
+              : "pt-2"
           }`}
         >
           <DocumentViewerTabs
@@ -314,7 +317,7 @@ const DocumentViewer = () => {
         </div>
       )}
 
-      <div className="flex-1 p-3 sm:p-6 overflow-hidden">
+      <div className="flex-1 p-3 sm:p-5 overflow-hidden">
         <DocumentViewerContent
           fileId={fileId!}
           fileUrl={fileUrl}
