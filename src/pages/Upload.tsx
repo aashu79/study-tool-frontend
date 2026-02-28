@@ -72,10 +72,10 @@ const UploadPage = () => {
     <DashboardLayout>
       <div className="max-w-5xl mx-auto space-y-5">
         {/* HERO SECTION */}
-        <div className="relative overflow-hidden rounded-xl bg-linear-to-br from-slate-900 via-indigo-900 to-violet-900 p-6 text-white shadow-lg">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(139,92,246,0.15),transparent_50%)]" />
-          <div className="absolute -top-20 -left-20 w-72 h-72 bg-indigo-500/10 rounded-full blur-[100px]" />
-          <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-violet-500/10 rounded-full blur-[100px]" />
+        <div className="relative overflow-hidden rounded-xl bg-linear-to-br from-slate-900 via-emerald-900 to-teal-900 p-6 text-white shadow-lg">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.15),transparent_50%)]" />
+          <div className="absolute -top-20 -left-20 w-72 h-72 bg-emerald-500/10 rounded-full blur-[100px]" />
+          <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-teal-500/10 rounded-full blur-[100px]" />
 
           <div className="relative z-10">
             <div className="flex items-start gap-3">
@@ -120,12 +120,12 @@ const UploadPage = () => {
                 setFileList(validFiles);
               }}
               beforeUpload={() => false}
-              className="border-2! border-dashed! border-indigo-200! hover:border-indigo-400! bg-linear-to-br! from-indigo-50/30! to-violet-50/30! rounded-xl! transition-all"
+              className="border-2! border-dashed! border-emerald-200! hover:border-emerald-400! bg-linear-to-br! from-emerald-50/30! to-teal-50/30! rounded-xl! transition-all"
               showUploadList={false}
             >
               <div className="py-6">
                 <p className="ant-upload-drag-icon mb-3">
-                  <InboxOutlined className="text-indigo-500 text-5xl" />
+                  <InboxOutlined className="text-emerald-500 text-5xl" />
                 </p>
                 <p className="ant-upload-text font-semibold text-slate-800 text-lg mb-1">
                   Click or drag files to upload
@@ -217,7 +217,7 @@ const UploadPage = () => {
                   icon={<FiUpload />}
                   onClick={handleUpload}
                   loading={uploadMutation.isPending}
-                  className="bg-indigo-600! hover:bg-indigo-700! rounded-lg! h-11! px-6! font-semibold! shadow-sm! shadow-indigo-600/20! transition-all"
+                  className="bg-emerald-600! hover:bg-emerald-700! rounded-lg! h-11! px-6! font-semibold! shadow-sm! shadow-emerald-600/20! transition-all"
                 >
                   Upload {fileList.length} File{fileList.length > 1 ? "s" : ""}
                 </Button>

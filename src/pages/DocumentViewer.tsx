@@ -283,32 +283,8 @@ const DocumentViewer = () => {
         onSetPanelState={setPanelState}
       />
 
-      {!isStudySessionActive && !isSessionBootstrapLoading && (
-        <div className="px-3 sm:px-5 pt-2.5">
-          <div className="rounded-lg border border-amber-200/80 bg-linear-to-r from-amber-50 to-orange-50/50 px-4 py-2.5 flex items-center justify-between gap-3">
-            <p className="text-xs text-amber-800">
-              Start a study session to track your learning activity and focus
-              time.
-            </p>
-            <button
-              onClick={handleStartSession}
-              disabled={isSessionStarting}
-              className="shrink-0 px-3 py-1.5 rounded-md bg-amber-600 text-white text-xs font-medium hover:bg-amber-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-            >
-              {isSessionStarting ? "Starting..." : "Start Session"}
-            </button>
-          </div>
-        </div>
-      )}
-
       {panelState !== "document" && (
-        <div
-          className={`px-3 sm:px-5 z-10 ${
-            isStudySessionActive || isSessionBootstrapLoading
-              ? "pt-2.5"
-              : "pt-2"
-          }`}
-        >
+        <div className="px-3 sm:px-5 pt-2.5 z-10">
           <DocumentViewerTabs
             tabs={tabs}
             activeTab={activeTab}

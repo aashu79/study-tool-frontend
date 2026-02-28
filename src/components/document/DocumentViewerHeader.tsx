@@ -28,10 +28,10 @@ const DocumentViewerHeader = ({
   onSetPanelState,
 }: DocumentViewerHeaderProps) => {
   return (
-    <div className="relative overflow-hidden bg-linear-to-r from-slate-900 via-indigo-900 to-violet-900 text-white shadow-xl">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(139,92,246,0.15),transparent_50%)]" />
-      <div className="absolute -left-16 -top-16 h-48 w-48 rounded-full bg-indigo-500/10 blur-3xl" />
-      <div className="absolute -right-16 -bottom-16 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl" />
+    <div className="relative overflow-hidden bg-linear-to-r from-slate-900 via-emerald-900 to-teal-900 text-white shadow-lg">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.15),transparent_50%)]" />
+      <div className="absolute -left-16 -top-16 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl" />
+      <div className="absolute -right-16 -bottom-16 h-48 w-48 rounded-full bg-teal-500/10 blur-3xl" />
       <div className="relative px-4 py-3.5 sm:px-6 sm:py-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 sm:gap-4 min-w-0">
@@ -46,7 +46,7 @@ const DocumentViewerHeader = ({
               </span>
             </button>
             <div className="hidden sm:block w-px h-8 bg-white/20" />
-            <div className="hidden sm:flex p-2 bg-indigo-500/20 rounded-lg border border-indigo-400/20">
+            <div className="hidden sm:flex p-2 bg-emerald-500/20 rounded-lg border border-emerald-400/20">
               <FiBookOpen size={18} />
             </div>
             <div className="min-w-0">
@@ -68,7 +68,7 @@ const DocumentViewerHeader = ({
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
                   </span>
                   <span className="text-xs font-medium text-emerald-300">
-                    Active
+                    Session Active
                   </span>
                 </div>
                 <button
@@ -77,18 +77,28 @@ const DocumentViewerHeader = ({
                   className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium bg-red-500/80 hover:bg-red-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-sm shadow-red-500/20"
                 >
                   <FiSquare size={13} />
-                  {isSessionEnding ? "Ending..." : "End"}
+                  {isSessionEnding ? "Ending..." : "End Session"}
                 </button>
               </div>
+            ) : isSessionBootstrapLoading ? (
+              <div className="flex items-center gap-2 text-white/60 text-xs">
+                <span className="h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white/80 animate-spin" />
+                <span className="hidden sm:inline">Checking session...</span>
+              </div>
             ) : (
-              <button
-                onClick={onStartSession}
-                disabled={isSessionStarting || isSessionBootstrapLoading}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium bg-indigo-500 hover:bg-indigo-400 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-sm shadow-indigo-500/30"
-              >
-                <FiPlay size={13} />
-                {isSessionStarting ? "Starting..." : "Start Session"}
-              </button>
+              <div className="flex items-center gap-2">
+                <p className="hidden sm:block text-xs text-white/50 max-w-[14rem] leading-tight">
+                  Start a session to track your focus time
+                </p>
+                <button
+                  onClick={onStartSession}
+                  disabled={isSessionStarting}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-sm shadow-emerald-500/30"
+                >
+                  <FiPlay size={13} />
+                  {isSessionStarting ? "Starting..." : "Start Session"}
+                </button>
+              </div>
             )}
 
             <div className="hidden md:flex items-center rounded-lg bg-white/8 p-0.5 border border-white/10">

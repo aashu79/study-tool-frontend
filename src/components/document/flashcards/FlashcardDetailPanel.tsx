@@ -4,7 +4,6 @@ import {
   FiCheck,
   FiChevronLeft,
   FiChevronRight,
-  FiClock,
   FiEdit2,
   FiEye,
   FiEyeOff,
@@ -53,6 +52,45 @@ const typeBadgeStyles: Record<FlashcardCard["type"], string> = {
   COMPARISON: "bg-orange-100 text-orange-700",
   APPLICATION: "bg-rose-100 text-rose-700",
 };
+
+const STICKY_COLORS = [
+  {
+    bg: "bg-yellow-50",
+    border: "border-yellow-300",
+    strip: "bg-yellow-200",
+    text: "text-yellow-800",
+  },
+  {
+    bg: "bg-emerald-50",
+    border: "border-emerald-300",
+    strip: "bg-emerald-200",
+    text: "text-emerald-800",
+  },
+  {
+    bg: "bg-sky-50",
+    border: "border-sky-300",
+    strip: "bg-sky-200",
+    text: "text-sky-800",
+  },
+  {
+    bg: "bg-pink-50",
+    border: "border-pink-300",
+    strip: "bg-pink-200",
+    text: "text-pink-800",
+  },
+  {
+    bg: "bg-orange-50",
+    border: "border-orange-300",
+    strip: "bg-orange-200",
+    text: "text-orange-800",
+  },
+  {
+    bg: "bg-violet-50",
+    border: "border-violet-300",
+    strip: "bg-violet-200",
+    text: "text-violet-800",
+  },
+] as const;
 
 const MarkdownBlock = ({
   content,
@@ -208,7 +246,7 @@ export const FlashcardDetailPanel = ({
 
   return (
     <div className="rounded-xl border border-slate-200/80 bg-white shadow-sm overflow-hidden h-full min-h-128 flex flex-col">
-      <div className="px-4 py-3 border-b border-slate-200 bg-linear-to-r from-slate-900 via-indigo-900 to-violet-900 text-white">
+      <div className="px-4 py-3 border-b border-slate-200 bg-linear-to-r from-slate-900 via-emerald-900 to-teal-900 text-white">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             {isEditingTitle ? (
@@ -223,7 +261,7 @@ export const FlashcardDetailPanel = ({
                   type="button"
                   onClick={handleRenameSave}
                   disabled={isRenaming}
-                  className="inline-flex items-center justify-center rounded-md bg-white px-2 py-1.5 text-indigo-800 hover:bg-indigo-50 disabled:opacity-60"
+                  className="inline-flex items-center justify-center rounded-md bg-white px-2 py-1.5 text-emerald-800 hover:bg-emerald-50 disabled:opacity-60"
                 >
                   <FiCheck size={14} />
                 </button>
@@ -274,7 +312,7 @@ export const FlashcardDetailPanel = ({
               <button
                 type="button"
                 onClick={startStudyMode}
-                className="rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-indigo-800 hover:bg-indigo-50"
+                className="rounded-lg bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-50"
               >
                 Start Study
               </button>
@@ -321,7 +359,7 @@ export const FlashcardDetailPanel = ({
               </div>
               <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-linear-to-r from-indigo-500 to-violet-500 transition-all duration-300"
+                  className="h-full rounded-full bg-linear-to-r from-emerald-500 to-teal-500 transition-all duration-300"
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>
@@ -347,7 +385,7 @@ export const FlashcardDetailPanel = ({
                   <button
                     type="button"
                     onClick={() => setIsAnswerVisible((prev) => !prev)}
-                    className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-700"
+                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
                   >
                     {isAnswerVisible ? (
                       <FiEyeOff size={13} />
@@ -366,16 +404,16 @@ export const FlashcardDetailPanel = ({
                     <MarkdownBlock content={currentCard.front} />
                   </div>
 
-                  <div className="rounded-xl border border-indigo-200 bg-indigo-50/50 p-4 min-h-40">
-                    <p className="text-xs uppercase tracking-wide text-indigo-700 font-semibold mb-2">
+                  <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 min-h-40">
+                    <p className="text-xs uppercase tracking-wide text-emerald-700 font-semibold mb-2">
                       Answer
                     </p>
                     {isAnswerVisible ? (
                       <MarkdownBlock content={currentCard.back} />
                     ) : (
-                      <div className="h-full rounded-lg border border-dashed border-indigo-300 bg-white/70 p-4 flex items-center justify-center text-center">
+                      <div className="h-full rounded-lg border border-dashed border-emerald-300 bg-white/70 p-4 flex items-center justify-center text-center">
                         <div>
-                          <p className="text-sm font-semibold text-indigo-800">
+                          <p className="text-sm font-semibold text-emerald-800">
                             Answer Hidden
                           </p>
                           <p className="text-xs text-slate-500 mt-1">
@@ -401,7 +439,7 @@ export const FlashcardDetailPanel = ({
                     {currentCard.tags.map((tag) => (
                       <span
                         key={`${currentCard.id}-${tag}`}
-                        className="rounded-full bg-indigo-100 px-2 py-0.5 text-[11px] font-medium text-indigo-700"
+                        className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-700"
                       >
                         #{tag}
                       </span>
@@ -426,7 +464,7 @@ export const FlashcardDetailPanel = ({
                   <button
                     type="button"
                     onClick={() => setIsAnswerVisible((prev) => !prev)}
-                    className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                    className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
                   >
                     {isAnswerVisible ? "Hide Answer" : "Reveal Answer"}
                   </button>
@@ -527,56 +565,98 @@ export const FlashcardDetailPanel = ({
             <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
               <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-slate-800">
-                  <FiClock size={14} />
-                  <h4 className="text-sm font-semibold">Cards</h4>
+                  <FiFileText size={14} />
+                  <h4 className="text-sm font-semibold">All Cards</h4>
+                  <span className="text-xs text-slate-400">
+                    ({cards.length})
+                  </span>
                 </div>
                 <button
                   type="button"
                   onClick={startStudyMode}
-                  className="rounded-md bg-indigo-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-indigo-700"
+                  className="rounded-md bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-emerald-700"
                 >
                   Study This Set
                 </button>
               </div>
 
-              <div className="p-3 space-y-3">
+              <div className="p-3">
                 {cards.length === 0 ? (
-                  <p className="text-sm text-slate-600">No cards available.</p>
+                  <p className="text-sm text-slate-500 py-4 text-center">
+                    No cards available.
+                  </p>
                 ) : (
-                  cards.map((card) => (
-                    <div
-                      key={card.id}
-                      className="rounded-lg border border-slate-200 bg-slate-50 p-3"
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
-                        <p className="text-sm font-semibold text-slate-800">
-                          #{card.cardIndex} {card.front}
-                        </p>
-                        <span
-                          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                            typeBadgeStyles[card.type]
-                          }`}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {cards.map((card, index) => {
+                      const color = STICKY_COLORS[index % STICKY_COLORS.length];
+                      return (
+                        <div
+                          key={card.id}
+                          className={`rounded-lg border-2 ${color.border} ${color.bg} overflow-hidden flex flex-col shadow-sm`}
                         >
-                          {card.type}
-                        </span>
-                      </div>
-                      <MarkdownBlock content={card.back} />
-                      {(card.hint || card.topic || card.tags.length > 0) && (
-                        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-600">
-                          {card.hint && <span>Hint: {card.hint}</span>}
-                          {card.topic && <span>Topic: {card.topic}</span>}
-                          {card.tags.map((tag) => (
+                          {/* Sticky top strip */}
+                          <div
+                            className={`${color.strip} px-3 py-1.5 flex items-center justify-between gap-1`}
+                          >
                             <span
-                              key={`${card.id}-${tag}`}
-                              className="rounded-full bg-white px-2 py-0.5"
+                              className={`text-[10px] font-bold uppercase tracking-wider ${color.text}`}
                             >
-                              #{tag}
+                              #{card.cardIndex} · {card.type}
                             </span>
-                          ))}
+                            {card.topic && (
+                              <span
+                                className={`text-[10px] ${color.text} opacity-70 truncate max-w-[7rem]`}
+                              >
+                                {card.topic}
+                              </span>
+                            )}
+                          </div>
+                          {/* Question */}
+                          <div className="px-3 pt-3 pb-1">
+                            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mb-1">
+                              Question
+                            </p>
+                            <p className="text-sm text-slate-800 font-medium leading-snug">
+                              {card.front}
+                            </p>
+                          </div>
+                          {/* Divider */}
+                          <div className={`mx-3 my-2 h-px ${color.strip}`} />
+                          {/* Answer */}
+                          <div className="px-3 pb-3 flex-1">
+                            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400 mb-1">
+                              Answer
+                            </p>
+                            <MarkdownBlock
+                              content={card.back}
+                              className="text-xs"
+                            />
+                          </div>
+                          {/* Hint */}
+                          {card.hint && (
+                            <div
+                              className={`px-3 pb-2 text-[11px] ${color.text} opacity-80`}
+                            >
+                              💡 {card.hint}
+                            </div>
+                          )}
+                          {/* Tags */}
+                          {card.tags.length > 0 && (
+                            <div className="px-3 pb-2 flex flex-wrap gap-1">
+                              {card.tags.map((tag) => (
+                                <span
+                                  key={`${card.id}-${tag}`}
+                                  className="rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-medium text-slate-600"
+                                >
+                                  #{tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  ))
+                      );
+                    })}
+                  </div>
                 )}
               </div>
             </div>

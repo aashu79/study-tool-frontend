@@ -94,7 +94,7 @@ export const QuizCreatePanel = ({
         className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors"
       >
         <div className="flex items-center gap-2.5 text-slate-800">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600">
             <FiZap size={14} />
           </span>
           <div className="text-left">
@@ -123,14 +123,14 @@ export const QuizCreatePanel = ({
               value={formState.title}
               onChange={(event) => handleChange("title", event.target.value)}
               placeholder="e.g., Chapter 4 Review"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-slate-50/50"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 bg-slate-50/50"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-3">
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-slate-600">
-                Questions
+                Number of Questions
               </label>
               <input
                 type="number"
@@ -148,7 +148,7 @@ export const QuizCreatePanel = ({
                     ),
                   );
                 }}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-slate-50/50"
+                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 bg-slate-50/50"
               />
             </div>
 
@@ -156,22 +156,22 @@ export const QuizCreatePanel = ({
               <label className="text-xs font-medium text-slate-600">
                 Difficulty
               </label>
-              <select
-                value={formState.difficulty}
-                onChange={(event) =>
-                  handleChange(
-                    "difficulty",
-                    event.target.value as QuizDifficultyInput,
-                  )
-                }
-                className="w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400"
-              >
-                {DIFFICULTY_OPTIONS.map((difficulty) => (
-                  <option key={difficulty.value} value={difficulty.value}>
-                    {difficulty.label}
-                  </option>
+              <div className="grid grid-cols-4 gap-1.5">
+                {DIFFICULTY_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => handleChange("difficulty", opt.value)}
+                    className={`rounded-lg py-2 text-xs font-medium transition-all ${
+                      formState.difficulty === opt.value
+                        ? "bg-emerald-600 text-white shadow-sm"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
           </div>
 
@@ -187,14 +187,14 @@ export const QuizCreatePanel = ({
               }
               rows={2}
               placeholder="e.g., Focus on chapter 2 concepts"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 bg-slate-50/50 resize-none"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 bg-slate-50/50 resize-none"
             />
           </div>
 
           <button
             type="submit"
             disabled={disabled || isSubmitting}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-blue-600/20 transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-emerald-600/20 transition-all hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? (
               <span className="flex items-center justify-center gap-2">

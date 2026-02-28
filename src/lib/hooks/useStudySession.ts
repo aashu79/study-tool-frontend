@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
 
 import toast from "react-hot-toast";
 import {
@@ -156,16 +155,6 @@ export const useStudySession = (fileId: string | undefined) => {
     [clearStoredStudySessionId],
   );
 
-  const startStudySessionMutation = useMutation({
-    mutationFn: () =>
-      studySessionService.startStudySession({
-        fileId: fileId!,
-        initialEventData: {
-          source: "document_viewer",
-        },
-      }),
-  });
-
   const fetchActiveSessionWithRetry = useCallback(async () => {
     if (!fileId) {
       return null;
@@ -203,25 +192,27 @@ export const useStudySession = (fileId: string | undefined) => {
     }
 
     try {
-      const session = await startStudySessionMutation.mutateAsync();
-      let resolvedSessionId: string | null = session?.id ?? null;
+      // Call the service directly — avoids TanStack mutation state racing
+      // with our own isManuallyStarting state flag.
+      const session = await studySessionService.startStudySession({
+        fileId,
+        initialEventData: { source: "document_viewer" },
+      });
 
-      if (!resolvedSessionId) {
-        const activeSession = await fetchActiveSessionWithRetry();
-        resolvedSessionId = activeSession?.id ?? null;
-      }
+      const confirmedSessionId = session?.id ?? null;
 
-      if (!resolvedSessionId) {
+      if (!confirmedSessionId) {
         throw new Error("Study session started but no session id was returned");
       }
-      const confirmedSessionId = resolvedSessionId;
 
       sessionIdRef.current = confirmedSessionId;
       endingSessionRef.current = false;
       persistStudySessionId(fileId, confirmedSessionId);
 
+      // Set session ID and clear starting flag in the same render cycle
       if (isMountedRef.current) {
         setStudySessionId(confirmedSessionId);
+        setIsManuallyStarting(false);
       }
 
       toast.success("Study session started");
@@ -236,19 +227,14 @@ export const useStudySession = (fileId: string | undefined) => {
         err?.message ||
         "Failed to start study session";
       toast.error(errorMessage);
-    } finally {
-      isStartingRef.current = false;
+
       if (isMountedRef.current) {
         setIsManuallyStarting(false);
       }
+    } finally {
+      isStartingRef.current = false;
     }
-  }, [
-    fileId,
-    fetchActiveSessionWithRetry,
-    logStudyEvent,
-    persistStudySessionId,
-    startStudySessionMutation,
-  ]);
+  }, [fileId, logStudyEvent, persistStudySessionId]);
 
   // Bootstrap session on mount
   useEffect(() => {
@@ -366,8 +352,7 @@ export const useStudySession = (fileId: string | undefined) => {
 
   return {
     studySessionId,
-    isSessionStarting:
-      startStudySessionMutation.isPending || isManuallyStarting,
+    isSessionStarting: isManuallyStarting,
     isSessionEnding,
     isSessionBootstrapLoading,
     logStudyEvent,
