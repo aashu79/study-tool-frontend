@@ -1,4 +1,3 @@
-import { Card } from "antd";
 import type { IconType } from "react-icons";
 import { FiTrendingUp, FiTrendingDown } from "react-icons/fi";
 
@@ -19,45 +18,46 @@ const StatCard = ({
   title,
   value,
   trend,
-  iconColor = "#4f46e5",
-  iconBgColor = "#e0e7ff",
+  iconColor = "#10b981",
+  iconBgColor = "#d1fae5",
 }: StatCardProps) => {
   return (
-    <Card
-      className="hover:shadow-lg transition-all duration-300 border border-slate-200 h-full"
-      bodyStyle={{ padding: "1.5rem" }}
-    >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-sm"
-            style={{ backgroundColor: iconBgColor }}
-          >
-            <Icon size={24} style={{ color: iconColor }} />
-          </div>
-
-          <p className="text-slate-600 text-sm font-medium mb-1">{title}</p>
-          <h3 className="text-2xl font-bold text-slate-800 mb-2">{value}</h3>
-
-          {trend && (
-            <div className="flex items-center gap-1 text-sm">
-              {trend.isPositive ? (
-                <FiTrendingUp className="text-emerald-500" size={16} />
-              ) : (
-                <FiTrendingDown className="text-rose-500" size={16} />
-              )}
-              <span
-                className={
-                  trend.isPositive ? "text-emerald-600" : "text-rose-600"
-                }
-              >
-                {trend.value}
-              </span>
-            </div>
-          )}
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 p-5">
+      <div className="flex items-start justify-between mb-4">
+        <div
+          className="w-11 h-11 rounded-xl flex items-center justify-center shadow-sm"
+          style={{ backgroundColor: iconBgColor }}
+        >
+          <Icon size={20} style={{ color: iconColor }} />
         </div>
       </div>
-    </Card>
+
+      <p className="text-slate-500 text-xs font-semibold uppercase tracking-wide mb-1">
+        {title}
+      </p>
+      <h3 className="text-2xl font-black text-slate-800 mb-2 tracking-tight">
+        {value}
+      </h3>
+
+      {trend && (
+        <div className="flex items-center gap-1.5">
+          <div
+            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
+              trend.isPositive
+                ? "bg-emerald-50 text-emerald-600"
+                : "bg-rose-50 text-rose-600"
+            }`}
+          >
+            {trend.isPositive ? (
+              <FiTrendingUp size={11} />
+            ) : (
+              <FiTrendingDown size={11} />
+            )}
+            <span>{trend.value}</span>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

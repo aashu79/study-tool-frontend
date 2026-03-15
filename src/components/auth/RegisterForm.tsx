@@ -95,7 +95,7 @@ const RegisterForm = () => {
       <div className="w-full max-w-lg">
         <div className="text-center mb-4 md:mb-5">
           <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-1.5 md:mb-2">
-            Create Account ✨
+            Create Account âœ¨
           </h1>
           <p className="text-sm md:text-base text-slate-600 font-medium">
             Start your AI-powered learning journey today
@@ -122,11 +122,11 @@ const RegisterForm = () => {
                       className="border-4 border-teal-100 group-hover:border-teal-300 transition-all"
                     />
                   ) : (
-                    <div className="w-[90px] h-[90px] rounded-full bg-gradient-to-br from-teal-100 to-cyan-100 flex items-center justify-center border-4 border-teal-100 group-hover:border-teal-300 transition-all">
+                    <div className="w-[90px] h-[90px] rounded-full bg-linear-to-br from-teal-100 to-cyan-100 flex items-center justify-center border-4 border-teal-100 group-hover:border-teal-300 transition-all">
                       <FiUser className="text-4xl text-teal-600" />
                     </div>
                   )}
-                  <div className="absolute bottom-0 right-0 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full p-2 border-4 border-white group-hover:scale-110 transition-transform shadow-lg">
+                  <div className="absolute bottom-0 right-0 bg-linear-to-r from-orange-500 to-amber-500 rounded-full p-2 border-4 border-white group-hover:scale-110 transition-transform shadow-lg">
                     <FiCamera className="text-white text-sm" />
                   </div>
                 </div>
@@ -377,7 +377,7 @@ const RegisterForm = () => {
             htmlType="submit"
             size="large"
             loading={registerMutation.isPending}
-            className="w-full !bg-gradient-to-r !from-orange-500 !via-amber-500 !to-yellow-500 hover:!from-orange-600 hover:!via-amber-600 hover:!to-yellow-600 !text-white font-black hover:scale-[1.02] transition-all duration-500 shadow-xl shadow-orange-300/50 hover:shadow-2xl hover:shadow-amber-400/50 !h-11 !rounded-2xl !border-0 !text-base !mt-1"
+            className="w-full bg-linear-to-r! !from-orange-500 !via-amber-500 !to-yellow-500 hover:!from-orange-600 hover:!via-amber-600 hover:!to-yellow-600 !text-white font-black hover:scale-[1.02] transition-all duration-500 shadow-xl shadow-orange-300/50 hover:shadow-2xl hover:shadow-amber-400/50 !h-11 !rounded-2xl !border-0 !text-base !mt-1"
           >
             Create Account <FiArrowRight className="ml-2 inline" />
           </Button>

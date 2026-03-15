@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import toast from "react-hot-toast";
 import {
@@ -19,6 +20,7 @@ const wait = (ms: number) =>
 
 export const useStudySession = (fileId: string | undefined) => {
   //   const { triggerProcessing } = useProcessing();
+  const queryClient = useQueryClient();
   const [studySessionId, setStudySessionId] = useState<string | null>(null);
   const [isSessionEnding, setIsSessionEnding] = useState(false);
   const [isManuallyStarting, setIsManuallyStarting] = useState(false);
@@ -30,6 +32,11 @@ export const useStudySession = (fileId: string | undefined) => {
   const fileIdRef = useRef<string | null>(fileId ?? null);
   const endingSessionRef = useRef(false);
   const isStartingRef = useRef(false);
+
+  const invalidateStudySessionQueries = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: ["studySessions"] });
+    void queryClient.invalidateQueries({ queryKey: ["studySession"] });
+  }, [queryClient]);
 
   const persistStudySessionId = useCallback(
     (currentFileId: string, currentSessionId: string) => {
@@ -121,6 +128,8 @@ export const useStudySession = (fileId: string | undefined) => {
           sessionEnd: new Date().toISOString(),
         });
 
+        invalidateStudySessionQueries();
+
         if (options?.notify) {
           toast.success(
             status === "COMPLETED"
@@ -152,7 +161,7 @@ export const useStudySession = (fileId: string | undefined) => {
         endingSessionRef.current = false;
       }
     },
-    [clearStoredStudySessionId],
+    [clearStoredStudySessionId, invalidateStudySessionQueries],
   );
 
   const fetchActiveSessionWithRetry = useCallback(async () => {
@@ -216,6 +225,7 @@ export const useStudySession = (fileId: string | undefined) => {
       }
 
       toast.success("Study session started");
+      invalidateStudySessionQueries();
       logStudyEvent("SESSION_STARTED", { source: "document_viewer" });
     } catch (error: unknown) {
       const err = error as {
@@ -234,7 +244,12 @@ export const useStudySession = (fileId: string | undefined) => {
     } finally {
       isStartingRef.current = false;
     }
-  }, [fileId, logStudyEvent, persistStudySessionId]);
+  }, [
+    fileId,
+    invalidateStudySessionQueries,
+    logStudyEvent,
+    persistStudySessionId,
+  ]);
 
   // Bootstrap session on mount
   useEffect(() => {
@@ -336,6 +351,8 @@ export const useStudySession = (fileId: string | undefined) => {
 
   // Cleanup on unmount
   useEffect(() => {
+    isMountedRef.current = true;
+
     return () => {
       isMountedRef.current = false;
     };

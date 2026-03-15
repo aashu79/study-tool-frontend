@@ -141,15 +141,15 @@
 
 @layer utilities {
   .gradient-text {
-    @apply bg-gradient-to-r from-primary-600 via-secondary-500 to-accent-500 bg-clip-text text-transparent;
+    @apply bg-linear-to-r from-primary-600 via-secondary-500 to-accent-500 bg-clip-text text-transparent;
   }
 
   .gradient-bg {
-    @apply bg-gradient-to-br from-primary-50 via-white to-secondary-50;
+    @apply bg-linear-to-br from-primary-50 via-white to-secondary-50;
   }
 
   .gradient-bg-warm {
-    @apply bg-gradient-to-br from-primary-600 via-secondary-600 to-accent-600;
+    @apply bg-linear-to-br from-primary-600 via-secondary-600 to-accent-600;
   }
 
   .card-shadow {

@@ -30,7 +30,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="relative bg-gradient-to-br from-slate-50 via-teal-50/30 to-emerald-50/30 border-t border-teal-100/50">
+    <footer className="relative bg-linear-to-br from-slate-50 via-teal-50/30 to-emerald-50/30 border-t border-teal-100/50">
       {/* Decorative gradient orbs */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-200/20 rounded-full blur-3xl -z-0" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-200/20 rounded-full blur-3xl -z-0" />
@@ -40,11 +40,11 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-3 mb-6 group">
-              <div className="p-3 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 rounded-2xl shadow-lg shadow-emerald-200/50 group-hover:shadow-xl group-hover:shadow-teal-300/50 transition-all duration-500 group-hover:rotate-6">
+              <div className="p-3 bg-linear-to-br from-emerald-500 via-teal-500 to-cyan-600 rounded-2xl shadow-lg shadow-emerald-200/50 group-hover:shadow-xl group-hover:shadow-teal-300/50 transition-all duration-500 group-hover:rotate-6">
                 <IoSchool className="text-2xl text-white" />
               </div>
               <div className="flex flex-col">
-                <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-orange-600 bg-clip-text text-transparent">
+                <span className="text-2xl font-bold bg-linear-to-r from-emerald-600 via-teal-600 to-orange-600 bg-clip-text text-transparent">
                   StudyAI
                 </span>
                 <span className="text-xs text-slate-500 -mt-1 tracking-wide">
@@ -68,7 +68,7 @@ const Footer = () => {
                   aria-label={social.label}
                 >
                   <social.icon className="text-lg relative z-10" />
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-linear-to-br from-emerald-50 to-teal-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </a>
               ))}
             </div>
@@ -77,7 +77,7 @@ const Footer = () => {
           {/* Product Links */}
           <div>
             <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-5 flex items-center gap-2">
-              <span className="w-1 h-4 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+              <span className="w-1 h-4 bg-linear-to-b from-emerald-500 to-teal-500 rounded-full" />
               Product
             </h4>
             <ul className="space-y-3">
@@ -97,7 +97,7 @@ const Footer = () => {
           {/* Company Links */}
           <div>
             <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-5 flex items-center gap-2">
-              <span className="w-1 h-4 bg-gradient-to-b from-teal-500 to-cyan-500 rounded-full" />
+              <span className="w-1 h-4 bg-linear-to-b from-teal-500 to-cyan-500 rounded-full" />
               Company
             </h4>
             <ul className="space-y-3">
@@ -117,7 +117,7 @@ const Footer = () => {
           {/* Legal Links */}
           <div>
             <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-5 flex items-center gap-2">
-              <span className="w-1 h-4 bg-gradient-to-b from-orange-500 to-amber-500 rounded-full" />
+              <span className="w-1 h-4 bg-linear-to-b from-orange-500 to-amber-500 rounded-full" />
               Legal
             </h4>
             <ul className="space-y-3">
@@ -138,12 +138,12 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-teal-100/50 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-slate-500 font-medium">
-            © {currentYear} StudyAI. All rights reserved.
+            Â© {currentYear} StudyAI. All rights reserved.
           </p>
 
           <p className="text-sm text-slate-600 flex items-center gap-2 font-medium">
             Made with
-            <span className="inline-flex items-center justify-center w-7 h-7 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg animate-pulse">
+            <span className="inline-flex items-center justify-center w-7 h-7 bg-linear-to-br from-orange-500 to-red-500 rounded-lg animate-pulse">
               <FiHeart className="text-white w-4 h-4 fill-white" />
             </span>
             for students worldwide

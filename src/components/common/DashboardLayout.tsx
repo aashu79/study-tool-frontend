@@ -2,7 +2,6 @@ import { useState, useEffect, type ReactNode } from "react";
 import { Layout, App } from "antd";
 import Sidebar from "./Sidebar";
 import TopNavbar from "./TopNavbar";
-// import Footer from "./Footer";
 
 const { Content } = Layout;
 
@@ -15,12 +14,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Detect mobile screen
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) setCollapsed(true);
     };
-
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -28,7 +27,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <App>
-      <Layout hasSider style={{ minHeight: "100vh" }}>
+      <Layout hasSider style={{ minHeight: "100vh", background: "#f1f5f9" }}>
         <Sidebar
           collapsed={collapsed}
           onCollapse={setCollapsed}
@@ -39,8 +38,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
         <Layout
           style={{
-            marginLeft: isMobile ? 0 : collapsed ? 80 : 260,
-            transition: "margin-left 0.2s",
+            marginLeft: isMobile ? 0 : collapsed ? 72 : 256,
+            transition: "margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+            background: "#f1f5f9",
+            minHeight: "100vh",
           }}
         >
           <TopNavbar
@@ -50,11 +51,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             isMobile={isMobile}
           />
 
-          <Content className="p-4 md:p-6 bg-gray-50 min-h-[calc(100vh-64px-100px)]">
+          <Content
+            style={{ background: "#f1f5f9" }}
+            className="min-h-[calc(100vh-64px)] px-4 md:px-6 py-5"
+          >
             {children}
           </Content>
-
-          {/* <Footer /> */}
         </Layout>
       </Layout>
     </App>

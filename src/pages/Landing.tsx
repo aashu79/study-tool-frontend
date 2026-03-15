@@ -110,25 +110,25 @@ const Landing = () => {
   return (
     <PublicLayout>
       {/* Hero Section */}
-      <section className="relative min-h-[95vh] flex items-center overflow-hidden bg-gradient-to-br from-teal-50 via-white to-orange-50">
+      <section className="relative min-h-[95vh] flex items-center overflow-hidden bg-linear-to-br from-teal-50 via-white to-orange-50">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-emerald-300/30 to-teal-300/30 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute top-20 left-10 w-96 h-96 bg-linear-to-br from-emerald-300/30 to-teal-300/30 rounded-full blur-3xl animate-pulse" />
           <div
-            className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-gradient-to-br from-orange-300/30 to-amber-300/30 rounded-full blur-3xl animate-pulse"
+            className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-linear-to-br from-orange-300/30 to-amber-300/30 rounded-full blur-3xl animate-pulse"
             style={{ animationDelay: "1s" }}
           />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-br from-cyan-200/20 to-lime-200/20 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-linear-to-br from-cyan-200/20 to-lime-200/20 rounded-full blur-3xl" />
         </div>
 
         {/* Floating shapes */}
-        <div className="absolute top-1/4 right-1/4 w-4 h-4 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full animate-float" />
+        <div className="absolute top-1/4 right-1/4 w-4 h-4 bg-linear-to-br from-emerald-400 to-teal-400 rounded-full animate-float" />
         <div
-          className="absolute bottom-1/3 left-1/3 w-3 h-3 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full animate-float"
+          className="absolute bottom-1/3 left-1/3 w-3 h-3 bg-linear-to-br from-orange-400 to-amber-400 rounded-full animate-float"
           style={{ animationDelay: "0.5s" }}
         />
         <div
-          className="absolute top-1/3 left-1/4 w-2 h-2 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-full animate-float"
+          className="absolute top-1/3 left-1/4 w-2 h-2 bg-linear-to-br from-cyan-400 to-blue-400 rounded-full animate-float"
           style={{ animationDelay: "1s" }}
         />
 
@@ -138,7 +138,7 @@ const Landing = () => {
             <div className="text-center lg:text-left animate-fade-in space-y-8">
               <div className="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white/80 backdrop-blur-xl rounded-full shadow-lg shadow-teal-100/50 border border-teal-100/50">
                 <DiSpark className="text-teal-600 animate-pulse" />
-                <span className="text-sm font-bold bg-gradient-to-r from-emerald-600 to-orange-600 bg-clip-text text-transparent">
+                <span className="text-sm font-bold bg-linear-to-r from-emerald-600 to-orange-600 bg-clip-text text-transparent">
                   AI-Powered Learning Platform
                 </span>
               </div>
@@ -146,16 +146,16 @@ const Landing = () => {
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-slate-900 leading-[1.1]">
                 Master Your Studies with{" "}
                 <span className="relative inline-block">
-                  <span className="relative z-10 bg-gradient-to-r from-emerald-600 via-teal-600 to-orange-600 bg-clip-text text-transparent">
+                  <span className="relative z-10 bg-linear-to-r from-emerald-600 via-teal-600 to-orange-600 bg-clip-text text-transparent">
                     AI Power
                   </span>
-                  <span className="absolute bottom-2 left-0 w-full h-4 bg-gradient-to-r from-emerald-200 via-teal-200 to-orange-200 -z-0 rounded-lg blur-sm" />
+                  <span className="absolute bottom-2 left-0 w-full h-4 bg-linear-to-r from-emerald-200 via-teal-200 to-orange-200 -z-0 rounded-lg blur-sm" />
                 </span>
               </h1>
 
               <p className="text-xl sm:text-2xl text-slate-600 leading-relaxed font-medium">
                 Upload your notes and let AI create summaries, flashcards,
-                quizzes & provide personalized tutoring—all in one powerful
+                quizzes & provide personalized tutoringâ€”all in one powerful
                 platform.
               </p>
 
@@ -164,7 +164,7 @@ const Landing = () => {
                   <Button
                     type="primary"
                     size="large"
-                    className="group !bg-gradient-to-r !from-orange-500 !via-amber-500 !to-yellow-500 hover:!from-orange-600 hover:!via-amber-600 hover:!to-yellow-600 !text-white font-bold !px-10 !h-16 !text-lg hover:scale-105 transition-all duration-500 shadow-2xl shadow-orange-300/50 hover:shadow-amber-400/50 !rounded-2xl w-full sm:w-auto !border-0"
+                    className="group bg-linear-to-r! !from-orange-500 !via-amber-500 !to-yellow-500 hover:!from-orange-600 hover:!via-amber-600 hover:!to-yellow-600 !text-white font-bold !px-10 !h-16 !text-lg hover:scale-105 transition-all duration-500 shadow-2xl shadow-orange-300/50 hover:shadow-amber-400/50 !rounded-2xl w-full sm:w-auto !border-0"
                   >
                     Get Started Free
                     <FiArrowRight className="ml-2 inline group-hover:translate-x-1 transition-transform duration-300" />
@@ -184,10 +184,10 @@ const Landing = () => {
               <div className="flex items-center gap-5 justify-center lg:justify-start pt-6">
                 <div className="flex -space-x-4">
                   {[
-                    "bg-gradient-to-br from-emerald-400 to-teal-500",
-                    "bg-gradient-to-br from-cyan-400 to-blue-500",
-                    "bg-gradient-to-br from-orange-400 to-amber-500",
-                    "bg-gradient-to-br from-lime-400 to-emerald-500",
+                    "bg-linear-to-br from-emerald-400 to-teal-500",
+                    "bg-linear-to-br from-cyan-400 to-blue-500",
+                    "bg-linear-to-br from-orange-400 to-amber-500",
+                    "bg-linear-to-br from-lime-400 to-emerald-500",
                   ].map((gradient, i) => (
                     <div
                       key={i}
@@ -224,7 +224,7 @@ const Landing = () => {
                 {/* Main Card */}
                 <div className="relative bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-2xl shadow-teal-200/50 p-8 border border-teal-100/50">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 rounded-2xl flex items-center justify-center shadow-xl shadow-teal-300/50">
+                    <div className="w-16 h-16 bg-linear-to-br from-emerald-500 via-teal-500 to-cyan-600 rounded-2xl flex items-center justify-center shadow-xl shadow-teal-300/50">
                       <IoSchool className="text-3xl text-white" />
                     </div>
                     <div>
@@ -238,7 +238,7 @@ const Landing = () => {
                   </div>
 
                   {/* Progress Card */}
-                  <div className="bg-gradient-to-r from-teal-50 via-emerald-50 to-cyan-50 rounded-2xl p-5 mb-4 border border-teal-100/50">
+                  <div className="bg-linear-to-r from-teal-50 via-emerald-50 to-cyan-50 rounded-2xl p-5 mb-4 border border-teal-100/50">
                     <div className="flex justify-between items-center mb-3">
                       <span className="text-sm font-bold text-slate-700">
                         Today's Progress
@@ -248,7 +248,7 @@ const Landing = () => {
                       </span>
                     </div>
                     <div className="h-3 bg-white rounded-full overflow-hidden shadow-inner">
-                      <div className="h-full w-[78%] bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-full shadow-lg" />
+                      <div className="h-full w-[78%] bg-linear-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-full shadow-lg" />
                     </div>
                   </div>
 
@@ -276,10 +276,10 @@ const Landing = () => {
                     ].map((stat, i) => (
                       <div
                         key={i}
-                        className={`bg-gradient-to-br ${stat.bg} rounded-2xl p-4 text-center border border-white/50 shadow-sm hover:shadow-md transition-shadow duration-300`}
+                        className={`bg-linear-to-br ${stat.bg} rounded-2xl p-4 text-center border border-white/50 shadow-sm hover:shadow-md transition-shadow duration-300`}
                       >
                         <p
-                          className={`text-3xl font-black bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}
+                          className={`text-3xl font-black bg-linear-to-r ${stat.gradient} bg-clip-text text-transparent`}
                         >
                           {stat.value}
                         </p>
@@ -294,7 +294,7 @@ const Landing = () => {
                 {/* Floating Cards */}
                 <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-lg p-4 animate-float border border-teal-100">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-linear-to-br from-emerald-100 to-teal-100 rounded-lg flex items-center justify-center">
                       <FiCheck className="text-teal-600" />
                     </div>
                     <span className="text-sm font-bold text-slate-700">
@@ -308,7 +308,7 @@ const Landing = () => {
                   style={{ animationDelay: "0.5s" }}
                 >
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gradient-to-br from-orange-100 to-amber-100 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-linear-to-br from-orange-100 to-amber-100 rounded-lg flex items-center justify-center">
                       <FiZap className="text-orange-600" />
                     </div>
                     <span className="text-sm font-bold text-slate-700">
@@ -334,7 +334,7 @@ const Landing = () => {
               >
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <stat.icon className="w-7 h-7 text-orange-500 group-hover:scale-110 transition-transform duration-300" />
-                  <p className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-emerald-600 via-teal-600 to-orange-600 bg-clip-text text-transparent">
+                  <p className="text-4xl sm:text-5xl font-black bg-linear-to-r from-emerald-600 via-teal-600 to-orange-600 bg-clip-text text-transparent">
                     {stat.value}
                   </p>
                 </div>
@@ -348,12 +348,12 @@ const Landing = () => {
       {/* Features Section */}
       <section
         id="features"
-        className="py-24 px-4 bg-gradient-to-br from-slate-50 to-teal-50/30"
+        className="py-24 px-4 bg-linear-to-br from-slate-50 to-teal-50/30"
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in">
-            <span className="inline-block px-5 py-2.5 bg-gradient-to-r from-emerald-100 to-teal-100 text-teal-700 rounded-full text-sm font-bold mb-4 border border-teal-200/50">
-              ✨ Features
+            <span className="inline-block px-5 py-2.5 bg-linear-to-r from-emerald-100 to-teal-100 text-teal-700 rounded-full text-sm font-bold mb-4 border border-teal-200/50">
+              âœ¨ Features
             </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 mb-6">
               Everything You Need to Excel
@@ -372,10 +372,10 @@ const Landing = () => {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div
-                  className={`w-16 h-16 bg-gradient-to-br ${feature.lightGradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 border border-white shadow-lg`}
+                  className={`w-16 h-16 bg-linear-to-br ${feature.lightGradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 border border-white shadow-lg`}
                 >
                   <feature.icon
-                    className={`text-3xl bg-gradient-to-br ${feature.gradient} bg-clip-text text-transparent`}
+                    className={`text-3xl bg-linear-to-br ${feature.gradient} bg-clip-text text-transparent`}
                   />
                 </div>
                 <h3 className="text-2xl font-black text-slate-900 mb-3 group-hover:text-teal-700 transition-colors duration-300">
@@ -394,8 +394,8 @@ const Landing = () => {
       <section className="py-24 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <span className="inline-block px-5 py-2.5 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-700 rounded-full text-sm font-bold mb-4 border border-orange-200/50">
-              🚀 How It Works
+            <span className="inline-block px-5 py-2.5 bg-linear-to-r from-orange-100 to-amber-100 text-orange-700 rounded-full text-sm font-bold mb-4 border border-orange-200/50">
+              ðŸš€ How It Works
             </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 mb-6">
               Start Learning in 3 Simple Steps
@@ -404,7 +404,7 @@ const Landing = () => {
 
           <div className="grid md:grid-cols-3 gap-8 relative">
             {/* Connection Line */}
-            <div className="hidden md:block absolute top-16 left-1/4 right-1/4 h-1 bg-gradient-to-r from-emerald-200 via-teal-200 to-orange-200 rounded-full" />
+            <div className="hidden md:block absolute top-16 left-1/4 right-1/4 h-1 bg-linear-to-r from-emerald-200 via-teal-200 to-orange-200 rounded-full" />
 
             {[
               {
@@ -443,10 +443,10 @@ const Landing = () => {
                 <div className="text-center">
                   <div className="relative inline-block mb-6">
                     <div
-                      className={`w-24 h-24 bg-gradient-to-br ${item.lightGradient} rounded-3xl flex items-center justify-center shadow-lg border-2 border-white`}
+                      className={`w-24 h-24 bg-linear-to-br ${item.lightGradient} rounded-3xl flex items-center justify-center shadow-lg border-2 border-white`}
                     >
                       <div
-                        className={`w-16 h-16 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center shadow-xl`}
+                        className={`w-16 h-16 bg-linear-to-br ${item.gradient} rounded-2xl flex items-center justify-center shadow-xl`}
                       >
                         <item.icon className="text-3xl text-white" />
                       </div>
@@ -469,11 +469,11 @@ const Landing = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 px-4 bg-gradient-to-br from-teal-50 via-white to-orange-50">
+      <section className="py-24 px-4 bg-linear-to-br from-teal-50 via-white to-orange-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <span className="inline-block px-5 py-2.5 bg-white text-teal-700 rounded-full text-sm font-bold mb-4 shadow-lg border-2 border-teal-200/50">
-              💬 Testimonials
+              ðŸ’¬ Testimonials
             </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 mb-6">
               Loved by Students Worldwide
@@ -500,7 +500,7 @@ const Landing = () => {
                 </p>
                 <div className="flex items-center gap-4">
                   <div
-                    className={`w-14 h-14 bg-gradient-to-br ${testimonial.gradient} rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg`}
+                    className={`w-14 h-14 bg-linear-to-br ${testimonial.gradient} rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-lg`}
                   >
                     {testimonial.avatar}
                   </div>
@@ -520,8 +520,8 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+      <section className="py-24 px-4 bg-linear-to-r from-emerald-600 via-teal-600 to-cyan-600 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-size-[4rem_4rem]" />
 
         {/* Decorative circles */}
         <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
@@ -544,14 +544,14 @@ const Landing = () => {
             <Link to="/register">
               <Button
                 size="large"
-                className="!bg-gradient-to-r !from-orange-500 !via-amber-500 !to-yellow-500 hover:!from-orange-600 hover:!via-amber-600 hover:!to-yellow-600 !text-white font-black !px-12 !h-16 !text-lg hover:scale-105 hover:!shadow-2xl transition-all duration-500 !rounded-2xl !border-0 w-full sm:w-auto shadow-2xl shadow-orange-400/50"
+                className="bg-linear-to-r! !from-orange-500 !via-amber-500 !to-yellow-500 hover:!from-orange-600 hover:!via-amber-600 hover:!to-yellow-600 !text-white font-black !px-12 !h-16 !text-lg hover:scale-105 hover:!shadow-2xl transition-all duration-500 !rounded-2xl !border-0 w-full sm:w-auto shadow-2xl shadow-orange-400/50"
               >
                 <FiUsers className="mr-2 inline" />
                 Start Learning Free
               </Button>
             </Link>
             <p className="text-white/90 text-base font-bold">
-              ✨ No credit card required • Free forever plan available
+              âœ¨ No credit card required â€¢ Free forever plan available
             </p>
           </div>
         </div>

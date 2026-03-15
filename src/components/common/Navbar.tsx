@@ -72,12 +72,12 @@ const Header = () => {
             to="/"
             className="flex items-center gap-3 hover:scale-105 transition-all duration-500 group"
           >
-            <div className="relative p-3 bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 rounded-2xl shadow-lg shadow-emerald-200/50 group-hover:shadow-xl group-hover:shadow-teal-300/50 transition-all duration-500 group-hover:rotate-6">
+            <div className="relative p-3 bg-linear-to-br from-emerald-500 via-teal-500 to-cyan-600 rounded-2xl shadow-lg shadow-emerald-200/50 group-hover:shadow-xl group-hover:shadow-teal-300/50 transition-all duration-500 group-hover:rotate-6">
               <IoSchool className="text-2xl text-white relative z-10" />
               <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 rounded-2xl transition-opacity duration-500" />
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-orange-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-linear-to-r from-emerald-600 via-teal-600 to-orange-600 bg-clip-text text-transparent">
                 StudyAI
               </span>
               <span className="text-xs text-slate-500 -mt-1 tracking-wide">
@@ -100,9 +100,9 @@ const Header = () => {
               >
                 <span className="relative z-10">{item.label}</span>
                 {isActive(item.path) && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 rounded-full" />
+                  <div className="absolute inset-0 bg-linear-to-r from-emerald-50 via-teal-50 to-cyan-50 rounded-full" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-linear-to-r from-emerald-50 via-teal-50 to-cyan-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </Link>
             ))}
           </nav>
@@ -137,7 +137,7 @@ const Header = () => {
                 <Link to="/register">
                   <Button
                     type="primary"
-                    className="!bg-gradient-to-r !from-orange-500 !via-amber-500 !to-yellow-500 hover:!from-orange-600 hover:!via-amber-600 hover:!to-yellow-600 !text-white font-bold hover:scale-105 transition-all duration-500 shadow-lg shadow-orange-200/50 hover:shadow-xl hover:shadow-amber-300/50 !border-0 !rounded-full !h-11 !px-8"
+                    className="bg-linear-to-r! !from-orange-500 !via-amber-500 !to-yellow-500 hover:!from-orange-600 hover:!via-amber-600 hover:!to-yellow-600 !text-white font-bold hover:scale-105 transition-all duration-500 shadow-lg shadow-orange-200/50 hover:shadow-xl hover:shadow-amber-300/50 !border-0 !rounded-full !h-11 !px-8"
                   >
                     Get Started
                   </Button>
@@ -170,7 +170,7 @@ const Header = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`px-5 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-300 ${
                     isActive(item.path)
-                      ? "bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 text-teal-700 shadow-sm"
+                      ? "bg-linear-to-r from-emerald-50 via-teal-50 to-cyan-50 text-teal-700 shadow-sm"
                       : "text-slate-600 hover:bg-teal-50/50"
                   }`}
                 >
@@ -217,7 +217,7 @@ const Header = () => {
                     <Button
                       type="primary"
                       block
-                      className="!bg-gradient-to-r !from-orange-500 !via-amber-500 !to-yellow-500 !text-white font-bold !h-12 !border-0 !rounded-2xl shadow-lg shadow-orange-200/50"
+                      className="bg-linear-to-r! !from-orange-500 !via-amber-500 !to-yellow-500 !text-white font-bold !h-12 !border-0 !rounded-2xl shadow-lg shadow-orange-200/50"
                     >
                       Get Started
                     </Button>

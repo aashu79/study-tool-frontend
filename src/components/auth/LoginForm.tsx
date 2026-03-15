@@ -28,7 +28,7 @@ const LoginForm = () => {
       <div className="relative">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-black text-slate-900 mb-3">
-            Welcome Back 👋
+            Welcome Back ðŸ‘‹
           </h1>
           <p className="text-lg text-slate-600 font-medium">
             Sign in to continue your learning journey
@@ -114,7 +114,7 @@ const LoginForm = () => {
             htmlType="submit"
             size="large"
             loading={loginMutation.isPending}
-            className="w-full !bg-gradient-to-r !from-orange-500 !via-amber-500 !to-yellow-500 hover:!from-orange-600 hover:!via-amber-600 hover:!to-yellow-600 !text-white font-black hover:scale-[1.02] transition-all duration-500 shadow-xl shadow-orange-300/50 hover:shadow-2xl hover:shadow-amber-400/50 !h-14 !rounded-2xl !border-0 !text-base"
+            className="w-full bg-linear-to-r! !from-orange-500 !via-amber-500 !to-yellow-500 hover:!from-orange-600 hover:!via-amber-600 hover:!to-yellow-600 !text-white font-black hover:scale-[1.02] transition-all duration-500 shadow-xl shadow-orange-300/50 hover:shadow-2xl hover:shadow-amber-400/50 !h-14 !rounded-2xl !border-0 !text-base"
           >
             Sign In <FiArrowRight className="ml-2 inline" />
           </Button>

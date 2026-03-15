@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../components/common/DashboardLayout";
-import { Select, Spin, Empty, Pagination } from "antd";
+import { Select, Spin, Pagination } from "antd";
 import {
   FiActivity,
   FiClock,
@@ -13,6 +13,7 @@ import {
   FiFileText,
   FiRefreshCw,
   FiBarChart2,
+  FiArrowRight,
 } from "react-icons/fi";
 import { useStudySessions } from "../lib/hooks/useStudySessions";
 import type {
@@ -42,46 +43,42 @@ const formatDate = (value: string) =>
 const StatusBadge = ({ status }: { status: StudySessionStatus }) => {
   if (status === "ACTIVE") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
-        <FiPlayCircle size={11} />
+      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+        <FiPlayCircle size={10} />
         Active
       </span>
     );
   }
   if (status === "COMPLETED") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-100 text-teal-700">
-        <FiCheckCircle size={11} />
+      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-teal-100 text-teal-700 border border-teal-200">
+        <FiCheckCircle size={10} />
         Completed
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
-      <FiXCircle size={11} />
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700 border border-amber-200">
+      <FiXCircle size={10} />
       Incomplete
     </span>
   );
 };
 
 const FocusBar = ({ score }: { score: number }) => {
-  const clampedScore = Math.max(0, Math.min(100, score));
+  const clamped = Math.max(0, Math.min(100, score));
   const color =
-    clampedScore >= 70
-      ? "bg-emerald-500"
-      : clampedScore >= 40
-        ? "bg-amber-500"
-        : "bg-rose-500";
+    clamped >= 70 ? "#10b981" : clamped >= 40 ? "#f59e0b" : "#f43f5e";
   return (
     <div className="flex items-center gap-2">
       <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
         <div
-          className={`h-full rounded-full transition-all ${color}`}
-          style={{ width: `${clampedScore}%` }}
+          className="h-full rounded-full transition-all"
+          style={{ width: `${clamped}%`, backgroundColor: color }}
         />
       </div>
-      <span className="text-xs font-semibold text-slate-700 w-8 text-right">
-        {clampedScore}%
+      <span className="text-xs font-bold text-slate-600 w-8 text-right">
+        {clamped}%
       </span>
     </div>
   );
@@ -97,65 +94,74 @@ const SessionCard = ({ session }: { session: SessionListItem }) => {
 
   return (
     <div
-      className={`bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden ${canViewReport ? "cursor-pointer hover:border-emerald-300" : ""}`}
+      className={`bg-white rounded-2xl border border-slate-100 shadow-sm transition-all duration-200 overflow-hidden group ${
+        canViewReport
+          ? "cursor-pointer hover:shadow-md hover:border-emerald-200 hover:-translate-y-0.5"
+          : ""
+      }`}
       onClick={() =>
         canViewReport && navigate(`/study-sessions/${session.id}/report`)
       }
     >
       <div className="p-5">
-        {/* Top row */}
-        <div className="flex items-start justify-between gap-3 mb-3">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <FiFileText size={14} className="text-slate-400 shrink-0" />
-              <p className="text-sm font-semibold text-slate-800 truncate">
+              <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+                <FiFileText size={13} className="text-emerald-600" />
+              </div>
+              <p className="text-sm font-bold text-slate-800 truncate">
                 {session.file?.filename ?? "Unknown file"}
               </p>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-400 ml-9">
               {formatDate(session.sessionStart)}
             </p>
           </div>
           <StatusBadge status={session.status} />
         </div>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-3 mb-3 pt-3 border-t border-slate-100">
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-2 mb-3 p-3 bg-slate-50 rounded-xl">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1 text-slate-400 mb-0.5">
+            <div className="flex items-center justify-center gap-1 text-emerald-500 mb-1">
               <FiClock size={12} />
             </div>
-            <p className="text-sm font-bold text-slate-800">
+            <p className="text-sm font-black text-slate-800">
               {formatDuration(duration)}
             </p>
-            <p className="text-[10px] text-slate-500">Duration</p>
+            <p className="text-[10px] text-slate-400 font-medium">Duration</p>
           </div>
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-1 text-slate-400 mb-0.5">
+          <div className="text-center border-x border-slate-200">
+            <div className="flex items-center justify-center gap-1 text-amber-500 mb-1">
               <FiAlertTriangle size={12} />
             </div>
-            <p className="text-sm font-bold text-slate-800">
+            <p className="text-sm font-black text-slate-800">
               {session.summary?.distractionCount ?? session.distractionCount}
             </p>
-            <p className="text-[10px] text-slate-500">Distractions</p>
+            <p className="text-[10px] text-slate-400 font-medium">
+              Distractions
+            </p>
           </div>
           <div className="text-center">
-            <div className="flex items-center justify-center gap-1 text-slate-400 mb-0.5">
+            <div className="flex items-center justify-center gap-1 text-teal-500 mb-1">
               <FiTarget size={12} />
             </div>
-            <p className="text-sm font-bold text-slate-800">{focusScore}%</p>
-            <p className="text-[10px] text-slate-500">Focus</p>
+            <p className="text-sm font-black text-slate-800">{focusScore}%</p>
+            <p className="text-[10px] text-slate-400 font-medium">Focus</p>
           </div>
         </div>
 
-        {/* Focus bar */}
         <FocusBar score={focusScore} />
 
         {canViewReport && (
-          <div className="mt-3 pt-3 border-t border-slate-100">
-            <p className="text-xs text-emerald-600 font-medium text-center">
-              View full report →
-            </p>
+          <div className="mt-3 flex items-center justify-center gap-1.5 text-xs font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">
+            <span>View Full Report</span>
+            <FiArrowRight
+              size={12}
+              className="group-hover:translate-x-0.5 transition-transform"
+            />
           </div>
         )}
       </div>
@@ -188,47 +194,55 @@ const StudySessions = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Hero */}
-        <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-emerald-900 to-teal-900 p-6 md:p-8 text-white shadow-xl">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-          <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-[120px]" />
-          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-teal-400/20 rounded-full blur-[140px]" />
-          <div className="relative z-10 flex items-start gap-4">
-            <div className="p-3 bg-white/15 backdrop-blur-sm rounded-xl">
-              <FiActivity className="text-3xl" />
+      <div className="max-w-7xl mx-auto space-y-5">
+        {/* HEADER */}
+        <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-emerald-500 via-teal-500 to-cyan-500 p-6 md:p-7 text-white shadow-lg shadow-emerald-200">
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+            }}
+          />
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/15 rounded-full blur-3xl" />
+
+          <div className="relative z-10 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+              <FiActivity size={22} />
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-black mb-1">
+              <h1 className="text-xl md:text-2xl font-black tracking-tight">
                 Study Sessions
               </h1>
-              <p className="text-emerald-200 text-sm">
-                Review your past sessions, focus scores, and detailed
-                performance reports
+              <p className="text-white/80 text-sm mt-0.5 font-medium">
+                {pagination
+                  ? `${pagination.total} session${pagination.total !== 1 ? "s" : ""} recorded Ã¢â‚¬â€ review your focus & performance`
+                  : "Review your past sessions, focus scores and reports"}
               </p>
-              {pagination && (
-                <div className="mt-3 flex items-center gap-4">
-                  <div className="bg-white/15 rounded-xl px-3 py-1.5 flex items-center gap-2">
-                    <FiBarChart2 size={14} className="text-emerald-300" />
-                    <span className="text-sm font-bold">
-                      {pagination.total}
-                    </span>
-                    <span className="text-xs text-emerald-200">
-                      total sessions
-                    </span>
-                  </div>
-                </div>
-              )}
             </div>
+
+            {pagination && (
+              <div className="hidden md:flex items-center gap-3">
+                <div className="bg-white/20 rounded-xl px-4 py-2 text-center">
+                  <p className="text-lg font-black">{pagination.total}</p>
+                  <p className="text-[11px] text-white/70 font-medium">Total</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap items-center gap-3 bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+        {/* FILTERS */}
+        <div className="flex flex-wrap items-center gap-3 bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+          <div className="flex items-center gap-2">
+            <FiBarChart2 size={15} className="text-slate-400" />
+            <span className="text-sm font-bold text-slate-600">Filter:</span>
+          </div>
           <Select
-            placeholder="Filter by status"
+            placeholder="All Sessions"
             allowClear
-            style={{ width: 180 }}
+            style={{ width: 170 }}
             value={statusFilter}
             onChange={(val) => {
               setStatusFilter(val as StudySessionStatus | undefined);
@@ -236,61 +250,72 @@ const StudySessions = () => {
             }}
             options={[
               { label: "All Sessions", value: undefined },
-              { label: "Completed", value: "COMPLETED" },
-              { label: "Incomplete", value: "INCOMPLETE" },
-              { label: "Active", value: "ACTIVE" },
+              { label: "Ã¢Å“â€¦ Completed", value: "COMPLETED" },
+              { label: "Ã¢Å¡Â Ã¯Â¸Â Incomplete", value: "INCOMPLETE" },
+              { label: "Ã°Å¸Å¸Â¢ Active", value: "ACTIVE" },
             ]}
           />
           <button
             onClick={() => refetch()}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition-colors border border-slate-200"
           >
             <FiRefreshCw
-              size={14}
+              size={13}
               className={isFetching ? "animate-spin" : ""}
             />
             Refresh
           </button>
         </div>
 
-        {/* Content */}
+        {/* CONTENT */}
         {isLoading ? (
           <div className="flex justify-center py-16">
             <Spin size="large" />
           </div>
         ) : errorMessage ? (
-          <div className="flex flex-col items-center py-16 gap-3">
-            <FiAlertTriangle size={32} className="text-rose-400" />
-            <p className="text-slate-600">{errorMessage}</p>
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center py-16 gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center">
+              <FiAlertTriangle size={24} className="text-rose-400" />
+            </div>
+            <div className="text-center">
+              <p className="font-bold text-slate-700">{errorMessage}</p>
+              <p className="text-sm text-slate-400 mt-1">
+                Something went wrong loading your sessions.
+              </p>
+            </div>
             <button
               onClick={() => refetch()}
-              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 text-sm font-medium"
+              className="px-5 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 text-sm font-bold transition-colors shadow-sm shadow-emerald-200"
             >
-              Retry
+              Try Again
             </button>
           </div>
         ) : sessions.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm py-16">
-            <Empty
-              description={
-                <span className="text-slate-500 text-sm">
-                  {statusFilter
-                    ? `No ${statusFilter.toLowerCase()} sessions found`
-                    : "No study sessions yet. Start a session from a document to begin tracking."}
-                </span>
-              }
-            />
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
+            <div className="text-center py-16">
+              <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-4">
+                <FiActivity size={28} className="text-emerald-300" />
+              </div>
+              <p className="font-bold text-slate-700 mb-1">
+                {statusFilter
+                  ? `No ${statusFilter.toLowerCase()} sessions found`
+                  : "No study sessions yet"}
+              </p>
+              <p className="text-sm text-slate-400">
+                Start a session from any document to track your focus.
+              </p>
+            </div>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {sessions.map((session) => (
                 <SessionCard key={session.id} session={session} />
               ))}
             </div>
 
             {pagination && pagination.totalPages > 1 && (
-              <div className="flex justify-center pt-2">
+              <div className="flex justify-center pt-1">
                 <Pagination
                   current={pagination.page}
                   total={pagination.total}

@@ -16,10 +16,10 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
 
   return (
     <div className="min-h-screen flex bg-slate-50">
-      {/* LEFT SIDE – MATCHED LANDING GRADIENT */}
-      <div className="relative hidden lg:flex lg:w-1/2 overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600">
+      {/* LEFT SIDE â€“ MATCHED LANDING GRADIENT */}
+      <div className="relative hidden lg:flex lg:w-1/2 overflow-hidden bg-linear-to-br from-emerald-600 via-teal-600 to-cyan-600">
         {/* Grid Overlay (same vibe as landing CTA) */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-size-[4rem_4rem]" />
 
         {/* Gradient Blobs */}
         <div className="absolute -top-32 -left-32 w-[520px] h-[520px] bg-white/20 rounded-full blur-[120px]" />
@@ -73,7 +73,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
         </div>
       </div>
 
-      {/* RIGHT SIDE – FORM */}
+      {/* RIGHT SIDE â€“ FORM */}
       <div className="relative w-full lg:w-1/2 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
@@ -81,7 +81,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
             to="/"
             className="lg:hidden flex items-center justify-center gap-3 mb-8"
           >
-            <div className="p-3 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 rounded-xl shadow-lg">
+            <div className="p-3 bg-linear-to-br from-emerald-600 via-teal-600 to-cyan-600 rounded-xl shadow-lg">
               <IoSchool className="text-2xl text-white" />
             </div>
             <span className="text-2xl font-black text-slate-800">StudyAI</span>

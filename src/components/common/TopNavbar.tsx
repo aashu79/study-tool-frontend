@@ -1,16 +1,20 @@
-import { Layout, Input, Badge, Avatar, Dropdown, Popover, Button } from "antd";
+import { Badge, Avatar, Dropdown, Popover, Button } from "antd";
 import {
-  FiSearch,
   FiBell,
   FiMenu,
   FiChevronLeft,
   FiChevronRight,
+  FiSearch,
+  FiSettings,
+  FiLogOut,
+  FiUser,
 } from "react-icons/fi";
 import type { MenuProps } from "antd";
 import { useAuthStore } from "../../lib/store/auth.store";
 import { useLogout } from "../../lib/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useProfilePicture } from "../../lib/hooks/useFile";
+import { Layout } from "antd";
 
 const { Header } = Layout;
 
@@ -21,6 +25,26 @@ interface TopNavbarProps {
   isMobile: boolean;
 }
 
+const pageTitles: Record<string, string> = {
+  "/dashboard": "Dashboard",
+  "/my-materials": "My Study Materials",
+  "/upload": "Upload Materials",
+  "/study-sessions": "Study Sessions",
+  "/profile": "Profile",
+};
+
+const getPageTitle = (pathname: string) => {
+  for (const [key, title] of Object.entries(pageTitles)) {
+    if (
+      pathname === key ||
+      (key !== "/dashboard" && pathname.startsWith(key))
+    ) {
+      return title;
+    }
+  }
+  return "Dashboard";
+};
+
 const TopNavbar = ({
   collapsed,
   onToggleSidebar,
@@ -30,7 +54,10 @@ const TopNavbar = ({
   const { user } = useAuthStore();
   const logoutMutation = useLogout();
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: profilePicData } = useProfilePicture();
+
+  const pageTitle = getPageTitle(location.pathname);
 
   const notifications = [
     {
@@ -38,36 +65,48 @@ const TopNavbar = ({
       title: "New quiz available",
       description: "Your Calculus quiz is ready",
       time: "5 min ago",
+      dot: "bg-emerald-500",
     },
     {
       id: 2,
       title: "Study streak milestone!",
-      description: "You've reached a 5-day streak ",
+      description: "You've reached a 5-day streak ðŸŽ¯",
       time: "2 hours ago",
+      dot: "bg-teal-500",
     },
   ];
 
-  const handleLogout = () => {
-    logoutMutation.mutate();
-  };
+  const handleLogout = () => logoutMutation.mutate();
 
   const userMenuItems: MenuProps["items"] = [
     {
+      key: "header",
+      label: (
+        <div className="px-1 py-2 border-b border-slate-100 mb-1 cursor-default">
+          <p className="font-semibold text-slate-800 text-sm">
+            {user?.full_name || "User"}
+          </p>
+          <p className="text-xs text-slate-500">{user?.email}</p>
+        </div>
+      ),
+      disabled: true,
+    },
+    {
       key: "profile",
+      icon: <FiUser size={14} />,
       label: "Profile",
       onClick: () => navigate("/profile"),
     },
     {
       key: "settings",
+      icon: <FiSettings size={14} />,
       label: "Settings",
-      onClick: () => navigate("/settings"),
     },
-    {
-      type: "divider",
-    },
+    { type: "divider" },
     {
       key: "logout",
-      label: "Logout",
+      icon: <FiLogOut size={14} />,
+      label: "Sign Out",
       onClick: handleLogout,
       danger: true,
     },
@@ -75,119 +114,148 @@ const TopNavbar = ({
 
   const notificationContent = (
     <div className="w-80">
-      <div className="flex items-center justify-between mb-3 pb-3 border-b">
-        <h4 className="font-semibold text-slate-800">Notifications</h4>
-        <Button type="link" size="small" className="text-slate-600">
-          Mark all as read
-        </Button>
+      <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+        <h4 className="font-bold text-slate-800">Notifications</h4>
+        <span className="text-xs text-emerald-600 font-semibold cursor-pointer hover:text-emerald-700">
+          Mark all read
+        </span>
       </div>
-      <div className="space-y-3">
+      <div className="space-y-1">
         {notifications.map((notif) => (
           <div
             key={notif.id}
-            className="p-3 hover:bg-slate-50 rounded-lg cursor-pointer transition-colors"
+            className="flex items-start gap-3 p-3 hover:bg-slate-50 rounded-xl cursor-pointer transition-colors"
           >
-            <div className="font-medium text-slate-800 text-sm">
-              {notif.title}
+            <span
+              className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${notif.dot}`}
+            />
+            <div className="flex-1">
+              <p className="font-semibold text-slate-800 text-sm">
+                {notif.title}
+              </p>
+              <p className="text-slate-500 text-xs mt-0.5">
+                {notif.description}
+              </p>
+              <p className="text-slate-400 text-[11px] mt-1">{notif.time}</p>
             </div>
-            <div className="text-slate-600 text-xs mt-1">
-              {notif.description}
-            </div>
-            <div className="text-slate-400 text-xs mt-1">{notif.time}</div>
           </div>
         ))}
       </div>
-      <div className="mt-3 pt-3 border-t text-center">
-        <Button type="link" size="small">
+      <div className="mt-3 pt-2 border-t border-slate-100 text-center">
+        <span className="text-xs text-emerald-600 font-semibold cursor-pointer hover:text-emerald-700">
           View all notifications
-        </Button>
+        </span>
       </div>
     </div>
   );
 
-  const getInitials = (name: string) => {
-    return name
+  const getInitials = (name: string) =>
+    name
       .split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase()
       .slice(0, 2);
-  };
 
   const displayName = user?.full_name || "User";
-  const displayEmail = user?.email || "";
 
   return (
-    <Header className="!bg-white border-b border-slate-200 !px-4 md:!px-6 flex items-center justify-between sticky top-0 z-10">
-      {/* Left: Toggle Button */}
+    <Header
+      style={{
+        background: "white",
+        borderBottom: "1px solid #f1f5f9",
+        padding: "0 24px",
+        height: 64,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        position: "sticky",
+        top: 0,
+        zIndex: 100,
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+      }}
+    >
+      {/* Left */}
       <div className="flex items-center gap-3">
         {isMobile ? (
-          <Button
-            type="text"
-            icon={<FiMenu size={20} />}
+          <button
             onClick={onMobileMenuOpen}
-            className="text-slate-600"
-          />
+            className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors"
+          >
+            <FiMenu size={20} />
+          </button>
         ) : (
-          <Button
-            type="text"
-            icon={
-              collapsed ? (
-                <FiChevronRight size={20} />
-              ) : (
-                <FiChevronLeft size={20} />
-              )
-            }
+          <button
             onClick={onToggleSidebar}
-            className="text-slate-600"
-          />
+            className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+          >
+            {collapsed ? (
+              <FiChevronRight size={18} />
+            ) : (
+              <FiChevronLeft size={18} />
+            )}
+          </button>
         )}
 
-        {/* Search Bar - Desktop Only */}
-        {!isMobile && (
-          <Input
-            placeholder="Search assignments…"
-            prefix={<FiSearch className="text-slate-400" />}
-            className="w-64"
-            disabled
-          />
-        )}
+        <div className="hidden md:flex items-center gap-2">
+          <h1 className="text-base font-bold text-slate-800">{pageTitle}</h1>
+        </div>
       </div>
 
-      {/* Right: Notifications + User Menu */}
-      <div className="flex items-center gap-3 md:gap-4">
+      {/* Right */}
+      <div className="flex items-center gap-1.5 md:gap-2">
+        {/* Search button - desktop */}
+        {!isMobile && (
+          <button className="flex items-center gap-2 px-3 py-2 text-sm text-slate-400 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition-colors">
+            <FiSearch size={15} />
+            <span className="text-xs">Search...</span>
+          </button>
+        )}
+
         {/* Notifications */}
         <Popover
           content={notificationContent}
           trigger="click"
           placement="bottomRight"
+          overlayInnerStyle={{ borderRadius: 16, padding: 16 }}
         >
-          <Badge count={2} size="small">
-            <Button
-              type="text"
-              icon={<FiBell size={20} />}
-              className="text-slate-600"
-            />
-          </Badge>
+          <button className="relative w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors">
+            <FiBell size={18} />
+            <Badge count={2} size="small" className="absolute top-1 right-1" />
+          </button>
         </Popover>
 
-        {/* User Dropdown */}
-        <Dropdown menu={{ items: userMenuItems }} trigger={["click"]}>
-          <div className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 rounded-lg px-2 py-1 transition-colors">
+        {/* Divider */}
+        <div className="w-px h-6 bg-slate-200 mx-1 hidden md:block" />
+
+        {/* User */}
+        <Dropdown
+          menu={{ items: userMenuItems }}
+          trigger={["click"]}
+          placement="bottomRight"
+        >
+          <button className="flex items-center gap-2.5 pl-1 pr-3 py-1 rounded-xl hover:bg-slate-50 transition-colors">
             <Avatar
-              size="default"
-              className="bg-primary-600"
+              size={34}
+              className="shrink-0"
               src={profilePicData?.url}
+              style={{
+                background: "linear-gradient(135deg, #10b981, #0d9488)",
+                fontWeight: 700,
+                fontSize: 13,
+              }}
             >
-              {getInitials(displayName)}
+              {!profilePicData?.url ? getInitials(displayName) : undefined}
             </Avatar>
             <div className="hidden md:block text-left">
-              <div className="text-sm font-medium text-slate-800">
-                {displayName}
-              </div>
-              <div className="text-xs text-slate-500">{displayEmail}</div>
+              <p className="text-sm font-semibold text-slate-800 leading-tight">
+                {displayName.split(" ")[0]}
+              </p>
+              <p className="text-[11px] text-slate-400 leading-tight">
+                Student
+              </p>
             </div>
-          </div>
+          </button>
         </Dropdown>
       </div>
     </Header>

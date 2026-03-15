@@ -19,7 +19,7 @@ import {
 import { useStudySessionReport } from "../lib/hooks/useStudySessionReport";
 import type { SessionReport } from "../lib/api/study-session.service";
 
-// ── helpers ───────────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ helpers Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 const formatDuration = (seconds: number) => {
   if (seconds <= 0) return "0m";
@@ -32,7 +32,7 @@ const formatDuration = (seconds: number) => {
 };
 
 const formatDate = (value?: string) => {
-  if (!value) return "—";
+  if (!value) return "Ã¢â‚¬â€";
   return new Date(value).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -49,9 +49,9 @@ const humaniseEventType = (type: string) =>
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 
-// ── sub-components ────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ sub-components Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
-const StatCard = ({
+const MiniStatCard = ({
   icon,
   label,
   value,
@@ -65,23 +65,34 @@ const StatCard = ({
   color?: "emerald" | "teal" | "amber" | "rose" | "sky";
 }) => {
   const palette: Record<string, string> = {
-    emerald: "bg-emerald-50 border-emerald-200 text-emerald-600",
-    teal: "bg-teal-50 border-teal-200 text-teal-600",
-    amber: "bg-amber-50 border-amber-200 text-amber-600",
-    rose: "bg-rose-50 border-rose-200 text-rose-600",
-    sky: "bg-sky-50 border-sky-200 text-sky-600",
+    emerald: "bg-emerald-50 border-emerald-200",
+    teal: "bg-teal-50 border-teal-200",
+    amber: "bg-amber-50 border-amber-200",
+    rose: "bg-rose-50 border-rose-200",
+    sky: "bg-sky-50 border-sky-200",
+  };
+  const iconPalette: Record<string, string> = {
+    emerald: "text-emerald-600",
+    teal: "text-teal-600",
+    amber: "text-amber-600",
+    rose: "text-rose-600",
+    sky: "text-sky-600",
   };
 
   return (
-    <div className={`rounded-xl border p-4 ${palette[color]}`}>
-      <div className="flex items-center gap-2 mb-2">
+    <div className={`rounded-2xl border p-4 ${palette[color]}`}>
+      <div className={`flex items-center gap-2 mb-2 ${iconPalette[color]}`}>
         {icon}
-        <p className="text-xs font-semibold uppercase tracking-wide opacity-70">
+        <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
           {label}
         </p>
       </div>
-      <p className="text-2xl font-black text-slate-900">{value}</p>
-      {sub && <p className="text-xs mt-0.5 opacity-70">{sub}</p>}
+      <p className="text-2xl font-black text-slate-900 tracking-tight">
+        {value}
+      </p>
+      {sub && (
+        <p className="text-xs text-slate-500 mt-0.5 font-medium">{sub}</p>
+      )}
     </div>
   );
 };
@@ -95,8 +106,8 @@ const SectionCard = ({
   icon: React.ReactNode;
   children: React.ReactNode;
 }) => (
-  <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-    <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-100">
+  <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+    <div className="flex items-center gap-2.5 px-5 py-4 border-b border-slate-100 bg-slate-50/50">
       <span className="text-emerald-600">{icon}</span>
       <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wide">
         {title}
@@ -109,32 +120,54 @@ const SectionCard = ({
 const FocusGauge = ({ score }: { score: number }) => {
   const clamped = Math.max(0, Math.min(100, score));
   const color =
+    clamped >= 70 ? "#10b981" : clamped >= 40 ? "#f59e0b" : "#f43f5e";
+  const bgColor =
     clamped >= 70
-      ? "bg-emerald-500"
+      ? "bg-emerald-50 border-emerald-200"
       : clamped >= 40
-        ? "bg-amber-500"
-        : "bg-rose-500";
+        ? "bg-amber-50 border-amber-200"
+        : "bg-rose-50 border-rose-200";
+  const textColor =
+    clamped >= 70
+      ? "text-emerald-700"
+      : clamped >= 40
+        ? "text-amber-700"
+        : "text-rose-700";
   const label =
-    clamped >= 70 ? "Good" : clamped >= 40 ? "Fair" : "Needs Improvement";
+    clamped >= 70
+      ? "Great Focus! Keep it up Ã°Å¸Å½Â¯"
+      : clamped >= 40
+        ? "Fair Ã¢â‚¬â€ room for improvement"
+        : "Needs Improvement";
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-1.5">
-        <span className="text-xs text-slate-500 font-medium">Focus Score</span>
-        <span className="text-sm font-bold text-slate-800">
-          {clamped}% — {label}
-        </span>
-      </div>
-      <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+    <div className={`rounded-2xl border p-5 ${bgColor}`}>
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+            Focus Score
+          </p>
+          <p className={`text-3xl font-black mt-0.5 ${textColor}`}>
+            {clamped}%
+          </p>
+        </div>
         <div
-          className={`h-full rounded-full transition-all duration-500 ${color}`}
-          style={{ width: `${clamped}%` }}
+          className={`px-3 py-1.5 rounded-full bg-white/70 text-xs font-bold ${textColor}`}
+        >
+          {label}
+        </div>
+      </div>
+      <div className="w-full bg-white/60 rounded-full h-3 overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all duration-700"
+          style={{ width: `${clamped}%`, backgroundColor: color }}
         />
       </div>
     </div>
   );
 };
 
-// ── main page ─────────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ main page Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 const StudySessionReport = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -158,68 +191,71 @@ const StudySessionReport = () => {
       const result = await sendEmailMutation.mutateAsync({ force });
       toast.success(result.message ?? "Report email sent");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to send email";
-      toast.error(msg);
+      toast.error(err instanceof Error ? err.message : "Failed to send email");
     }
   };
 
   return (
     <DashboardLayout>
-      <div className="max-w-5xl mx-auto space-y-6">
-        {/* Back + Header */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 transition-colors"
-          >
-            <FiArrowLeft size={16} />
-            Back
-          </button>
-        </div>
+      <div className="max-w-5xl mx-auto space-y-5">
+        {/* BACK */}
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-800 hover:bg-white border border-transparent hover:border-slate-200 px-3 py-2 rounded-xl transition-all"
+        >
+          <FiArrowLeft size={15} />
+          Back to Sessions
+        </button>
 
-        {/* Hero */}
-        <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-slate-900 via-emerald-900 to-teal-900 p-6 md:p-8 text-white shadow-xl">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-          <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-[120px]" />
-          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-teal-400/20 rounded-full blur-[140px]" />
+        {/* HERO */}
+        <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-emerald-500 via-teal-500 to-cyan-500 p-6 md:p-8 text-white shadow-lg shadow-emerald-200">
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+            }}
+          />
+          <div className="absolute -top-20 -right-20 w-64 h-64 bg-white/15 rounded-full blur-3xl" />
+
           <div className="relative z-10 flex items-start justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div className="p-3 bg-white/15 backdrop-blur-sm rounded-xl">
-                <FiActivity className="text-3xl" />
+              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+                <FiActivity size={22} />
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-black mb-1">
+                <h1 className="text-xl md:text-2xl font-black tracking-tight mb-1">
                   Session Report
                 </h1>
                 {report && (
                   <>
-                    <p className="text-emerald-200 text-sm flex items-center gap-1.5">
+                    <p className="text-white/85 text-sm flex items-center gap-1.5 font-medium">
                       <FiFileText size={13} />
                       {report.session.file?.filename ?? "Unknown file"}
                     </p>
-                    <p className="text-emerald-300 text-xs mt-1">
+                    <p className="text-white/65 text-xs mt-1">
                       {formatDate(report.session.sessionStart)}
                       {report.session.sessionEnd &&
-                        ` – ${formatDate(report.session.sessionEnd)}`}
+                        ` Ã¢â‚¬â€ ${formatDate(report.session.sessionEnd)}`}
                     </p>
                   </>
                 )}
               </div>
             </div>
 
-            {/* Send email */}
             {report && (
               <div className="shrink-0">
                 {report.emailDelivery.sent ? (
-                  <div className="flex flex-col items-end gap-1.5">
-                    <span className="inline-flex items-center gap-1.5 bg-white/15 rounded-lg px-3 py-1.5 text-xs font-medium">
-                      <FiMail size={12} />
+                  <div className="flex flex-col items-end gap-2">
+                    <span className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm rounded-xl px-3 py-1.5 text-xs font-semibold">
+                      <FiCheckCircle size={12} />
                       Report emailed
                     </span>
                     <button
                       onClick={() => handleSendEmail(true)}
                       disabled={sendEmailMutation.isPending}
-                      className="text-xs text-emerald-300 hover:text-white underline underline-offset-2 transition-colors disabled:opacity-50"
+                      className="text-xs text-white/75 hover:text-white underline underline-offset-2 transition-colors disabled:opacity-50"
                     >
                       Resend
                     </button>
@@ -228,10 +264,10 @@ const StudySessionReport = () => {
                   <button
                     onClick={() => handleSendEmail(false)}
                     disabled={sendEmailMutation.isPending}
-                    className="flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/20 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/25 rounded-xl px-4 py-2.5 text-sm font-bold transition-colors disabled:opacity-50"
                   >
                     <FiMail size={14} />
-                    {sendEmailMutation.isPending ? "Sending…" : "Email Report"}
+                    {sendEmailMutation.isPending ? "SendingÃ¢â‚¬Â¦" : "Email Report"}
                   </button>
                 )}
               </div>
@@ -247,12 +283,14 @@ const StudySessionReport = () => {
         )}
 
         {errorMessage && (
-          <div className="flex flex-col items-center py-16 gap-3">
-            <FiAlertTriangle size={32} className="text-rose-400" />
-            <p className="text-slate-600">{errorMessage}</p>
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col items-center py-16 gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center">
+              <FiAlertTriangle size={24} className="text-rose-400" />
+            </div>
+            <p className="font-bold text-slate-700">{errorMessage}</p>
             <button
               onClick={() => reportQuery.refetch()}
-              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-500 text-sm font-medium"
+              className="px-5 py-2.5 bg-emerald-500 text-white rounded-xl text-sm font-bold hover:bg-emerald-600 transition-colors shadow-sm shadow-emerald-200"
             >
               Retry
             </button>
@@ -261,10 +299,10 @@ const StudySessionReport = () => {
 
         {report && (
           <>
-            {/* Overview stats */}
+            {/* OVERVIEW STATS */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <StatCard
-                icon={<FiClock size={16} />}
+              <MiniStatCard
+                icon={<FiClock size={15} />}
                 label="Duration"
                 value={formatDuration(
                   report.session.summary?.totalDurationSeconds ??
@@ -273,15 +311,15 @@ const StudySessionReport = () => {
                 )}
                 color="emerald"
               />
-              <StatCard
-                icon={<FiTarget size={16} />}
+              <MiniStatCard
+                icon={<FiTarget size={15} />}
                 label="Focus Score"
                 value={`${report.session.summary?.focusScore ?? 0}%`}
                 sub={`${report.session.summary?.distractionRatioPercentage ?? 0}% distraction`}
                 color="teal"
               />
-              <StatCard
-                icon={<FiAlertTriangle size={16} />}
+              <MiniStatCard
+                icon={<FiAlertTriangle size={15} />}
                 label="Distractions"
                 value={String(
                   report.session.summary?.distractionCount ??
@@ -292,8 +330,8 @@ const StudySessionReport = () => {
                 )}
                 color="amber"
               />
-              <StatCard
-                icon={<FiBarChart2 size={16} />}
+              <MiniStatCard
+                icon={<FiBarChart2 size={15} />}
                 label="Quiz Attempts"
                 value={String(report.quiz.totalAttempts)}
                 sub={
@@ -305,32 +343,31 @@ const StudySessionReport = () => {
               />
             </div>
 
-            {/* Focus bar */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-              <FocusGauge score={report.session.summary?.focusScore ?? 0} />
-            </div>
+            {/* FOCUS GAUGE */}
+            <FocusGauge score={report.session.summary?.focusScore ?? 0} />
 
-            {/* Activity + Distractions side-by-side */}
+            {/* ACTIVITY + DISTRACTIONS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Activity */}
               <SectionCard
                 title="Activity Breakdown"
-                icon={<FiZap size={16} />}
+                icon={<FiZap size={15} />}
               >
                 {Object.keys(report.activity.countByType || {}).length === 0 ? (
-                  <p className="text-sm text-slate-500">No activity recorded</p>
+                  <p className="text-sm text-slate-400 font-medium">
+                    No activity recorded
+                  </p>
                 ) : (
-                  <dl className="space-y-2">
+                  <dl className="space-y-2.5">
                     {Object.entries(report.activity.countByType || {}).map(
                       ([type, count]) => (
                         <div
                           key={type}
-                          className="flex items-center justify-between"
+                          className="flex items-center justify-between group"
                         >
                           <dt className="text-sm text-slate-600">
                             {humaniseEventType(type)}
                           </dt>
-                          <dd className="text-sm font-semibold text-slate-900 bg-slate-100 rounded-full px-2.5 py-0.5">
+                          <dd className="text-sm font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-full px-2.5 py-0.5">
                             {count}
                           </dd>
                         </div>
@@ -340,18 +377,18 @@ const StudySessionReport = () => {
                 )}
               </SectionCard>
 
-              {/* Distractions */}
               <SectionCard
                 title="Distraction Breakdown"
-                icon={<FiAlertCircle size={16} />}
+                icon={<FiAlertCircle size={15} />}
               >
                 {Object.keys(report.distractions.countByType || {}).length ===
                 0 ? (
-                  <p className="text-sm text-slate-500">
+                  <div className="flex items-center gap-2 text-sm text-emerald-700 font-semibold">
+                    <FiCheckCircle size={16} className="text-emerald-500" />
                     No distractions recorded
-                  </p>
+                  </div>
                 ) : (
-                  <dl className="space-y-2">
+                  <dl className="space-y-2.5">
                     {Object.entries(report.distractions.countByType || {}).map(
                       ([type, count]) => (
                         <div
@@ -361,17 +398,17 @@ const StudySessionReport = () => {
                           <dt className="text-sm text-slate-600">
                             {humaniseEventType(type)}
                           </dt>
-                          <dd className="text-sm font-semibold text-rose-700 bg-rose-50 rounded-full px-2.5 py-0.5">
+                          <dd className="text-sm font-bold text-rose-700 bg-rose-50 border border-rose-100 rounded-full px-2.5 py-0.5">
                             {count}
                           </dd>
                         </div>
                       ),
                     )}
-                    <div className="pt-2 mt-2 border-t border-slate-100 flex items-center justify-between">
-                      <dt className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    <div className="pt-3 mt-1 border-t border-slate-100 flex items-center justify-between">
+                      <dt className="text-xs font-bold text-slate-500 uppercase tracking-wide">
                         Total distraction time
                       </dt>
-                      <dd className="text-sm font-bold text-rose-700">
+                      <dd className="text-sm font-black text-rose-700">
                         {formatDuration(
                           report.distractions.totalDurationSeconds || 0,
                         )}
@@ -382,93 +419,108 @@ const StudySessionReport = () => {
               </SectionCard>
             </div>
 
-            {/* Quiz performance */}
+            {/* QUIZ PERFORMANCE */}
             {report.quiz.totalAttempts > 0 && (
               <SectionCard
                 title="Quiz Performance"
-                icon={<FiTrendingUp size={16} />}
+                icon={<FiTrendingUp size={15} />}
               >
-                <div className="space-y-3">
-                  <div className="grid grid-cols-3 gap-3 mb-4">
-                    <div className="text-center p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                      <p className="text-xl font-black text-emerald-700">
-                        {report.quiz.bestScore.toFixed(1)}%
+                <div className="grid grid-cols-3 gap-3 mb-5">
+                  {[
+                    {
+                      label: "Best Score",
+                      value: `${report.quiz.bestScore.toFixed(1)}%`,
+                      color: "from-emerald-50 to-teal-50",
+                      border: "border-emerald-200",
+                      text: "text-emerald-700",
+                    },
+                    {
+                      label: "Avg Score",
+                      value: `${report.quiz.averageScore.toFixed(1)}%`,
+                      color: "from-teal-50 to-cyan-50",
+                      border: "border-teal-200",
+                      text: "text-teal-700",
+                    },
+                    {
+                      label: "Attempts",
+                      value: String(report.quiz.totalAttempts),
+                      color: "from-sky-50 to-blue-50",
+                      border: "border-sky-200",
+                      text: "text-sky-700",
+                    },
+                  ].map((s) => (
+                    <div
+                      key={s.label}
+                      className={`text-center p-4 bg-linear-to-br ${s.color} rounded-2xl border ${s.border}`}
+                    >
+                      <p className={`text-2xl font-black ${s.text}`}>
+                        {s.value}
                       </p>
-                      <p className="text-xs text-emerald-600 font-medium mt-0.5">
-                        Best Score
-                      </p>
-                    </div>
-                    <div className="text-center p-3 bg-teal-50 rounded-xl border border-teal-100">
-                      <p className="text-xl font-black text-teal-700">
-                        {report.quiz.averageScore.toFixed(1)}%
-                      </p>
-                      <p className="text-xs text-teal-600 font-medium mt-0.5">
-                        Avg Score
-                      </p>
-                    </div>
-                    <div className="text-center p-3 bg-sky-50 rounded-xl border border-sky-100">
-                      <p className="text-xl font-black text-sky-700">
-                        {report.quiz.totalAttempts}
-                      </p>
-                      <p className="text-xs text-sky-600 font-medium mt-0.5">
-                        Attempts
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    {report.quiz.attempts.map((attempt, i) => (
-                      <div
-                        key={attempt.id}
-                        className="flex items-center justify-between p-3 bg-slate-50 rounded-xl text-sm"
+                      <p
+                        className={`text-xs font-semibold mt-1 ${s.text} opacity-70`}
                       >
-                        <span className="text-slate-600">
-                          {attempt.quiz?.title ?? `Attempt ${i + 1}`}{" "}
-                          <span className="text-xs text-slate-400">
-                            ({attempt.quiz?.difficulty ?? ""})
+                        {s.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-2">
+                  {report.quiz.attempts.map((attempt, i) => (
+                    <div
+                      key={attempt.id}
+                      className="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl text-sm border border-slate-100"
+                    >
+                      <span className="text-slate-700 font-medium">
+                        {attempt.quiz?.title ?? `Attempt ${i + 1}`}
+                        {attempt.quiz?.difficulty && (
+                          <span className="ml-2 text-xs text-slate-400">
+                            ({attempt.quiz.difficulty})
                           </span>
-                        </span>
-                        <span
-                          className={`font-bold ${attempt.percentage >= 70 ? "text-emerald-700" : attempt.percentage >= 50 ? "text-amber-700" : "text-rose-700"}`}
-                        >
-                          {attempt.correctAnswers}/{attempt.totalQuestions} (
-                          {attempt.percentage.toFixed(0)}%)
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                        )}
+                      </span>
+                      <span
+                        className={`font-black text-sm ${attempt.percentage >= 70 ? "text-emerald-700" : attempt.percentage >= 50 ? "text-amber-700" : "text-rose-700"}`}
+                      >
+                        {attempt.correctAnswers}/{attempt.totalQuestions} (
+                        {attempt.percentage.toFixed(0)}%)
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </SectionCard>
             )}
 
-            {/* Improvement / Recommendations */}
+            {/* RECOMMENDATIONS */}
             {(report.improvement.recommendations.length > 0 ||
               report.improvement.nextSessionChecklist.length > 0) && (
               <SectionCard
                 title="Recommendations & Next Steps"
-                icon={<FiCheckCircle size={16} />}
+                icon={<FiCheckCircle size={15} />}
               >
                 {report.improvement.overallRating && (
-                  <div className="mb-4 inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-1.5 text-sm font-semibold text-emerald-700">
+                  <div className="mb-5 inline-flex items-center gap-2 bg-linear-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl px-4 py-2 text-sm font-bold text-emerald-700">
                     <FiTarget size={14} />
-                    Overall: {report.improvement.overallRating}
+                    Overall Rating: {report.improvement.overallRating}
                   </div>
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {report.improvement.recommendations.length > 0 && (
                     <div>
-                      <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
                         Recommendations
-                      </h3>
-                      <ul className="space-y-2">
+                      </p>
+                      <ul className="space-y-2.5">
                         {report.improvement.recommendations.map((r, i) => (
                           <li
                             key={i}
-                            className="flex gap-2 text-sm text-slate-700"
+                            className="flex gap-2.5 text-sm text-slate-700"
                           >
-                            <span className="text-emerald-500 shrink-0 mt-0.5">
-                              <FiCheckCircle size={14} />
-                            </span>
+                            <FiCheckCircle
+                              size={15}
+                              className="text-emerald-500 shrink-0 mt-0.5"
+                            />
                             {r}
                           </li>
                         ))}
@@ -478,19 +530,20 @@ const StudySessionReport = () => {
 
                   {report.improvement.nextSessionChecklist.length > 0 && (
                     <div>
-                      <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
                         Next Session Checklist
-                      </h3>
-                      <ul className="space-y-2">
+                      </p>
+                      <ul className="space-y-2.5">
                         {report.improvement.nextSessionChecklist.map(
                           (item, i) => (
                             <li
                               key={i}
-                              className="flex gap-2 text-sm text-slate-700"
+                              className="flex gap-2.5 text-sm text-slate-700"
                             >
-                              <span className="text-teal-500 shrink-0 mt-0.5">
-                                <FiCheckCircle size={14} />
-                              </span>
+                              <FiCheckCircle
+                                size={15}
+                                className="text-teal-500 shrink-0 mt-0.5"
+                              />
                               {item}
                             </li>
                           ),
@@ -502,27 +555,27 @@ const StudySessionReport = () => {
               </SectionCard>
             )}
 
-            {/* Email delivery status */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-center justify-between gap-4">
+            {/* EMAIL SECTION */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-center justify-between gap-4">
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
-                  <FiMail size={18} />
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                  <FiMail size={18} className="text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">
-                    Report Email
+                  <p className="font-bold text-slate-800 text-sm">
+                    Email This Report
                   </p>
                   {report.emailDelivery.sent ? (
                     <p className="text-xs text-slate-500 mt-0.5">
                       Sent to{" "}
-                      <span className="font-medium text-slate-700">
+                      <span className="font-semibold text-slate-700">
                         {report.emailDelivery.emailAddress ?? "your email"}
                       </span>{" "}
                       on {formatDate(report.emailDelivery.sentAt)}
                     </p>
                   ) : (
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Not sent yet. Send a copy to your email.
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Send a copy to your email for future reference.
                     </p>
                   )}
                 </div>
@@ -530,11 +583,11 @@ const StudySessionReport = () => {
               <button
                 onClick={() => handleSendEmail(report.emailDelivery.sent)}
                 disabled={sendEmailMutation.isPending}
-                className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                className="shrink-0 flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-emerald-500 to-teal-600 text-white rounded-xl text-sm font-bold transition-all hover:shadow-md shadow-sm shadow-emerald-200 disabled:opacity-50"
               >
                 <FiMail size={14} />
                 {sendEmailMutation.isPending
-                  ? "Sending…"
+                  ? "SendingÃ¢â‚¬Â¦"
                   : report.emailDelivery.sent
                     ? "Resend Email"
                     : "Send Email"}
