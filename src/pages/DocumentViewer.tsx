@@ -268,7 +268,7 @@ const DocumentViewer = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-slate-50">
+    <div className="h-screen flex flex-col bg-slate-100 text-slate-900">
       <DocumentViewerHeader
         fileName={fileName}
         mimeType={mimeType}
@@ -284,7 +284,7 @@ const DocumentViewer = () => {
       />
 
       {panelState !== "document" && (
-        <div className="px-3 sm:px-5 pt-2.5 z-10">
+        <div className="z-20 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur sm:px-8">
           <DocumentViewerTabs
             tabs={tabs}
             activeTab={activeTab}
@@ -293,7 +293,7 @@ const DocumentViewer = () => {
         </div>
       )}
 
-      <div className="flex-1 p-3 sm:p-5 overflow-hidden">
+      <div className="flex-1 overflow-hidden p-4 sm:p-8">
         <DocumentViewerContent
           fileId={fileId!}
           fileUrl={fileUrl}

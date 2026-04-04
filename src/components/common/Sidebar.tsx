@@ -167,7 +167,7 @@ const Sidebar = ({
       {/* Bottom decoration */}
       {!collapsed && (
         <div className="mx-3 mb-4 rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 p-4 text-white">
-          <p className="text-xs font-bold mb-1">ðŸŽ“ Keep Learning!</p>
+          <p className="text-xs font-bold mb-1">Keep Learning!</p>
           <p className="text-[11px] text-emerald-100 leading-relaxed">
             Upload materials to unlock AI-powered summaries & quizzes.
           </p>

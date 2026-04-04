@@ -39,6 +39,7 @@ export interface User {
   educationLevel: string;
   created_at: string;
   last_login: string;
+  is_verified?: boolean;
 }
 
 export interface ForgotPasswordRequest {

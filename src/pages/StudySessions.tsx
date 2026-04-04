@@ -217,7 +217,7 @@ const StudySessions = () => {
               </h1>
               <p className="text-white/80 text-sm mt-0.5 font-medium">
                 {pagination
-                  ? `${pagination.total} session${pagination.total !== 1 ? "s" : ""} recorded Ã¢â‚¬â€ review your focus & performance`
+                  ? `${pagination.total} session${pagination.total !== 1 ? "s" : ""} recorded - review your focus and performance`
                   : "Review your past sessions, focus scores and reports"}
               </p>
             </div>
@@ -250,9 +250,9 @@ const StudySessions = () => {
             }}
             options={[
               { label: "All Sessions", value: undefined },
-              { label: "Ã¢Å“â€¦ Completed", value: "COMPLETED" },
-              { label: "Ã¢Å¡Â Ã¯Â¸Â Incomplete", value: "INCOMPLETE" },
-              { label: "Ã°Å¸Å¸Â¢ Active", value: "ACTIVE" },
+              { label: "Completed", value: "COMPLETED" },
+              { label: "Incomplete", value: "INCOMPLETE" },
+              { label: "Active", value: "ACTIVE" },
             ]}
           />
           <button

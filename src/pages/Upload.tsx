@@ -1,7 +1,7 @@
 import { useState } from "react";
 import DashboardLayout from "../components/common/DashboardLayout";
 import FileCard from "../components/dashboard/FileCard";
-import { Upload as AntUpload, Button, Spin, Empty } from "antd";
+import { Upload as AntUpload, Spin } from "antd";
 import {
   FiUpload,
   FiFileText,
@@ -110,7 +110,7 @@ const UploadPage = () => {
                 Upload Study Materials
               </h1>
               <p className="text-white/80 text-sm mt-0.5 font-medium">
-                Add notes, PDFs and presentations Ã‚Â· Max file size:{" "}
+                Add notes, PDFs and presentations - Max file size:{" "}
                 {MAX_FILE_SIZE_LABEL}
               </p>
             </div>
@@ -167,7 +167,7 @@ const UploadPage = () => {
                 Drop files here or click to browse
               </p>
               <p className="text-slate-500 text-sm">
-                Supported: PDF, DOCX, PPT, TXT, JPG, PNG Ã¢â‚¬â€ max{" "}
+                Supported: PDF, DOCX, PPT, TXT, JPG, PNG - max{" "}
                 {MAX_FILE_SIZE_LABEL} per file
               </p>
             </div>

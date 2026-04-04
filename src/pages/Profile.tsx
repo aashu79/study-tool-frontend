@@ -1,5 +1,5 @@
 import DashboardLayout from "../components/common/DashboardLayout";
-import { Avatar, Spin, Tag } from "antd";
+import { Avatar, Spin } from "antd";
 import {
   FiUser,
   FiMail,
@@ -184,7 +184,7 @@ const Profile = () => {
                       {field.label}
                     </p>
                     <p className="font-semibold text-slate-800 text-sm truncate">
-                      {field.value || "Ã¢â‚¬â€"}
+                      {field.value || "-"}
                     </p>
                   </div>
                 </div>
@@ -206,25 +206,25 @@ const Profile = () => {
             {[
               {
                 label: "Total Sessions",
-                value: "Ã¢â‚¬â€",
+                value: "-",
                 color: "from-emerald-50 to-teal-50",
                 border: "border-emerald-100",
               },
               {
                 label: "Materials Uploaded",
-                value: "Ã¢â‚¬â€",
+                value: "-",
                 color: "from-violet-50 to-purple-50",
                 border: "border-violet-100",
               },
               {
                 label: "Quizzes Taken",
-                value: "Ã¢â‚¬â€",
+                value: "-",
                 color: "from-amber-50 to-orange-50",
                 border: "border-amber-100",
               },
               {
                 label: "Study Streak",
-                value: "Ã¢â‚¬â€",
+                value: "-",
                 color: "from-sky-50 to-cyan-50",
                 border: "border-sky-100",
               },

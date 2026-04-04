@@ -1,28 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  FiDownload,
-  FiTrash2,
-  FiEdit2,
   FiCheck,
-  FiX,
   FiChevronDown,
   FiChevronUp,
-  FiPlus,
-  FiEye,
-  FiEyeOff,
-  FiClock,
+  FiDownload,
+  FiEdit2,
   FiFileText,
-  FiAlertCircle,
-  FiZap,
+  FiList,
+  FiPlus,
+  FiTrash2,
+  FiX,
 } from "react-icons/fi";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import ReactMarkdown from "react-markdown";
+import toast from "react-hot-toast";
 import { useSummary } from "../../lib/hooks/useSummary";
 import type {
   CreateSummaryRequest,
   Summary,
 } from "../../lib/api/summary.service";
-import ReactMarkdown from "react-markdown";
-import toast from "react-hot-toast";
+import {
+  Drawer,
+  IconButton,
+  Modal,
+  SkeletonBlock,
+} from "./DocumentOverlay";
 
 interface ImprovedSummaryTabProps {
   fileId: string;
@@ -46,6 +48,7 @@ const parseContent = (content: string) => {
   const thinkMatches = [...content.matchAll(thinkRegex)];
   const thinkingContent = thinkMatches.map((match) => match[1]).join("\n\n");
   const cleanContent = content.replace(thinkRegex, "").trim();
+
   return {
     thinkingContent,
     cleanContent,
@@ -53,20 +56,25 @@ const parseContent = (content: string) => {
   };
 };
 
+const formatDate = (value: string) =>
+  new Date(value).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
 export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
   const { createSummary, getFileSummaries, deleteSummary, updateSummaryTitle } =
     useSummary();
   const queryClient = useQueryClient();
 
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [selectedSummaryId, setSelectedSummaryId] = useState<string | null>(
-    null,
-  );
+  const [selectedSummaryId, setSelectedSummaryId] = useState<string | null>(null);
   const [showThinking, setShowThinking] = useState<Record<string, boolean>>({});
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
+  const [customTitle, setCustomTitle] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
-
-  const [customTitle, setCustomTitle] = useState("");
 
   const {
     data: summaries = [],
@@ -85,6 +93,20 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
 
   const safeSummaries = summaries.filter(isValidSummary);
 
+  useEffect(() => {
+    if (safeSummaries.length === 0) {
+      setSelectedSummaryId(null);
+      return;
+    }
+
+    if (
+      !selectedSummaryId ||
+      !safeSummaries.some((summary) => summary.id === selectedSummaryId)
+    ) {
+      setSelectedSummaryId(safeSummaries[0].id);
+    }
+  }, [safeSummaries, selectedSummaryId]);
+
   const createMutation = useMutation({
     mutationFn: (params: CreateSummaryRequest) => createSummary(fileId, params),
     onSuccess: (newSummary) => {
@@ -93,7 +115,7 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
         ...old.filter(isValidSummary),
       ]);
       setCustomTitle("");
-      setShowCreateForm(false);
+      setShowCreateModal(false);
       setSelectedSummaryId(newSummary.id);
       toast.success("Summary generated successfully");
     },
@@ -114,9 +136,6 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
           .filter(isValidSummary)
           .filter((summary) => summary.id !== deletedId),
       );
-      if (selectedSummaryId === deletedId) {
-        setSelectedSummaryId(null);
-      }
       toast.success("Summary deleted successfully");
     },
     onError: (error: unknown) => {
@@ -136,6 +155,7 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
           .map((summary) => (summary.id === id ? updatedSummary : summary)),
       );
       setEditingId(null);
+      setEditTitle("");
       toast.success("Title updated successfully");
     },
     onError: (error: unknown) => {
@@ -144,6 +164,13 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
       toast.error(message);
     },
   });
+
+  const selectedSummary = safeSummaries.find(
+    (summary) => summary.id === selectedSummaryId,
+  );
+  const parsedContent = selectedSummary
+    ? parseContent(selectedSummary.content)
+    : null;
 
   const handleGenerateSummary = () => {
     if (createMutation.isPending) {
@@ -158,7 +185,7 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
   };
 
   const handleDelete = (summaryId: string) => {
-    if (window.confirm("Are you sure you want to delete this summary?")) {
+    if (window.confirm("Delete this summary?")) {
       deleteMutation.mutate(summaryId);
     }
   };
@@ -173,12 +200,8 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
       toast.error("Title cannot be empty");
       return;
     }
-    updateMutation.mutate({ id: summaryId, title: editTitle.trim() });
-  };
 
-  const handleCancelEdit = () => {
-    setEditingId(null);
-    setEditTitle("");
+    updateMutation.mutate({ id: summaryId, title: editTitle.trim() });
   };
 
   const downloadSummary = (summary: Summary) => {
@@ -194,314 +217,284 @@ export const ImprovedSummaryTab = ({ fileId }: ImprovedSummaryTabProps) => {
     toast.success("Summary downloaded");
   };
 
-  const selectedSummary = safeSummaries.find(
-    (summary) => summary.id === selectedSummaryId,
-  );
-  const selectedContent = selectedSummary
-    ? parseContent(selectedSummary.content)
-    : null;
-
   if (fetchError) {
     const message =
-      fetchError instanceof Error
-        ? fetchError.message
-        : "Failed to load summaries";
+      fetchError instanceof Error ? fetchError.message : "Failed to load summaries";
+
     return (
-      <div className="h-full flex items-center justify-center p-6">
-        <div className="text-center max-w-md">
-          <div className="p-4 bg-red-100 rounded-full inline-block mb-4">
-            <FiAlertCircle size={32} className="text-red-600" />
+      <div className="flex h-full items-center justify-center p-8">
+        <div className="max-w-md rounded-[28px] border border-rose-200 bg-rose-50 p-8 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-rose-600 shadow-sm">
+            <FiFileText size={24} />
           </div>
-          <h3 className="text-lg font-semibold text-slate-800 mb-2">
-            Failed to Load Summaries
+          <h3 className="mt-4 text-lg font-semibold text-slate-900">
+            Failed to load summaries
           </h3>
-          <p className="text-slate-600">{message}</p>
+          <p className="mt-2 text-sm text-slate-600">{message}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col bg-slate-50/50">
-      <div className="bg-white border-b border-slate-200/80 px-5 py-3.5">
-        <div className="flex items-center justify-between">
+    <>
+      <div className="flex min-h-full flex-col bg-slate-50">
+        <div className="flex items-start justify-between gap-4 px-6 py-6 sm:px-8">
           <div>
-            <h3 className="text-base font-semibold text-slate-800">
-              Summaries
-            </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {safeSummaries.length} summary
-              {safeSummaries.length === 1 ? "" : "ies"} available
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-600">
+              Summary
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-slate-900">
+              Document summary
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Read the current summary or open history to revisit previous versions.
             </p>
           </div>
-          <button
-            onClick={() => setShowCreateForm((prev) => !prev)}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 font-medium text-sm shadow-sm shadow-indigo-600/20"
-          >
-            <FiPlus size={15} />
-            New Summary
-          </button>
-        </div>
-      </div>
 
-      {showCreateForm && (
-        <div className="bg-white border-b border-slate-200/80 px-5 py-4">
-          <div className="max-w-lg">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-indigo-100 rounded-md">
-                  <FiZap size={14} className="text-indigo-600" />
-                </div>
-                <h4 className="text-sm font-semibold text-slate-800">
-                  Generate Summary
-                </h4>
-              </div>
-              <button
-                onClick={() => setShowCreateForm(false)}
-                className="text-slate-400 hover:text-slate-600 transition-colors"
-              >
-                <FiX size={18} />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-slate-600 mb-1">
-                  Title <span className="text-slate-400">(optional)</span>
-                </label>
-                <input
-                  type="text"
-                  value={customTitle}
-                  onChange={(event) => setCustomTitle(event.target.value)}
-                  placeholder="e.g., Chapter 3 Summary"
-                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all bg-slate-50/50"
-                />
-              </div>
-
-              <button
-                onClick={handleGenerateSummary}
-                disabled={createMutation.isPending}
-                className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium text-sm shadow-sm shadow-indigo-600/20"
-              >
-                {createMutation.isPending ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Generating...
-                  </span>
-                ) : (
-                  "Generate Summary"
-                )}
-              </button>
-            </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setShowHistoryDrawer(true)}
+              className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+            >
+              <FiList size={16} />
+              History
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowCreateModal(true)}
+              className="inline-flex h-11 items-center gap-2 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+            >
+              <FiPlus size={16} />
+              New Summary
+            </button>
           </div>
         </div>
-      )}
 
-      <div className="flex-1 flex overflow-hidden">
-        <div
-          className={`${selectedSummaryId ? "w-72" : "flex-1"} border-r border-slate-200/80 bg-white overflow-y-auto transition-all duration-300`}
-        >
+        <div className="min-h-0 flex-1 px-6 pb-6 sm:px-8 sm:pb-8">
           {isLoading ? (
-            <div className="flex justify-center items-center h-32">
-              <span className="animate-spin rounded-full h-7 w-7 border-2 border-indigo-200 border-t-indigo-600" />
+            <div className="space-y-4">
+              <SkeletonBlock className="h-20 w-full rounded-[28px]" />
+              <SkeletonBlock className="h-[65vh] w-full rounded-[32px]" />
             </div>
-          ) : safeSummaries.length === 0 ? (
-            <div className="text-center py-12 px-6">
-              <div className="p-3 bg-slate-100 rounded-xl inline-block mb-3">
-                <FiFileText size={28} className="text-slate-400" />
-              </div>
-              <p className="text-slate-600 font-medium text-sm mb-1">
-                No summaries yet
-              </p>
-              <p className="text-xs text-slate-400">
-                Create your first summary above
-              </p>
-            </div>
-          ) : (
-            <div className="p-3 space-y-1.5">
-              {safeSummaries.map((summary) => {
-                const isSelected = selectedSummaryId === summary.id;
-                return (
-                  <div
-                    key={summary.id}
-                    onClick={() => setSelectedSummaryId(summary.id)}
-                    className={`p-3 rounded-lg border cursor-pointer transition-all duration-200 ${
-                      isSelected
-                        ? "bg-indigo-50 border-indigo-200 shadow-sm"
-                        : "bg-white border-slate-100 hover:border-indigo-100 hover:bg-indigo-50/30"
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        {editingId === summary.id ? (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={editTitle}
-                              onChange={(event) =>
-                                setEditTitle(event.target.value)
-                              }
-                              onClick={(event) => event.stopPropagation()}
-                              className="flex-1 px-2 py-1 text-sm border border-slate-300 rounded focus:ring-2 focus:ring-teal-500"
-                            />
-                            <button
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                handleSaveEdit(summary.id);
-                              }}
-                              disabled={updateMutation.isPending}
-                              className="p-1.5 text-green-600 hover:bg-green-50 rounded disabled:opacity-50"
-                            >
-                              <FiCheck size={16} />
-                            </button>
-                            <button
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                handleCancelEdit();
-                              }}
-                              className="p-1.5 text-red-600 hover:bg-red-50 rounded"
-                            >
-                              <FiX size={16} />
-                            </button>
-                          </div>
-                        ) : (
-                          <>
-                            <h4 className="font-semibold text-slate-800 text-sm truncate mb-1">
-                              {summary.title}
-                            </h4>
-                            <div className="flex items-center gap-2 text-xs text-slate-500">
-                              <span className="flex items-center gap-1">
-                                <FiFileText size={11} />
-                                {summary.wordCount} words
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <FiClock size={11} />
-                                {new Date(
-                                  summary.createdAt,
-                                ).toLocaleDateString()}
-                              </span>
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      {editingId !== summary.id && (
-                        <div className="flex items-center gap-0.5">
-                          <button
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              handleStartEdit(summary);
-                            }}
-                            className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
-                            title="Edit title"
-                          >
-                            <FiEdit2 size={13} />
-                          </button>
-                          <button
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              downloadSummary(summary);
-                            }}
-                            className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
-                            title="Download"
-                          >
-                            <FiDownload size={13} />
-                          </button>
-                          <button
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              handleDelete(summary.id);
-                            }}
-                            disabled={deleteMutation.isPending}
-                            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
-                            title="Delete"
-                          >
-                            <FiTrash2 size={13} />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {selectedSummaryId && selectedContent && (
-          <div className="flex-1 flex flex-col bg-white overflow-hidden">
-            <div className="border-b border-slate-200/80 px-5 py-3.5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-base font-semibold text-slate-800">
-                    {selectedSummary?.title}
-                  </h3>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-slate-400">
-                    <span>{selectedSummary?.wordCount} words</span>
-                    <span className="w-1 h-1 rounded-full bg-slate-300" />
-                    <span>{selectedSummary?.tokensUsed} tokens</span>
-                    <span className="w-1 h-1 rounded-full bg-slate-300" />
-                    <span>{selectedSummary?.modelUsed}</span>
-                  </div>
+          ) : !selectedSummary || !parsedContent ? (
+            <div className="flex h-full items-center justify-center">
+              <div className="max-w-lg rounded-[32px] border border-slate-200 bg-white p-10 text-center shadow-sm">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-50 text-teal-600">
+                  <FiFileText size={26} />
                 </div>
+                <h3 className="mt-5 text-2xl font-semibold text-slate-900">
+                  No summaries yet
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-slate-600">
+                  Generate a clean document summary and keep every previous version
+                  tucked away in history.
+                </p>
                 <button
-                  onClick={() => setSelectedSummaryId(null)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
+                  type="button"
+                  onClick={() => setShowCreateModal(true)}
+                  className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-teal-600 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
                 >
-                  <FiX size={18} />
+                  <FiPlus size={16} />
+                  New Summary
                 </button>
               </div>
             </div>
+          ) : (
+            <div className="flex h-full min-h-0 flex-col gap-4">
+              <div className="rounded-[28px] border border-slate-200 bg-white px-6 py-5 shadow-sm">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1">
+                    {editingId === selectedSummary.id ? (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <input
+                          type="text"
+                          value={editTitle}
+                          onChange={(event) => setEditTitle(event.target.value)}
+                          className="min-w-0 flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        />
+                        <IconButton
+                          title="Save title"
+                          onClick={() => handleSaveEdit(selectedSummary.id)}
+                          disabled={updateMutation.isPending}
+                        >
+                          <FiCheck size={17} />
+                        </IconButton>
+                        <IconButton
+                          title="Cancel edit"
+                          onClick={() => {
+                            setEditingId(null);
+                            setEditTitle("");
+                          }}
+                        >
+                          <FiX size={17} />
+                        </IconButton>
+                      </div>
+                    ) : (
+                      <>
+                        <h3 className="truncate text-2xl font-semibold text-slate-900">
+                          {selectedSummary.title}
+                        </h3>
+                        <p className="mt-2 text-sm text-slate-500">
+                          Generated on {formatDate(selectedSummary.createdAt)}
+                        </p>
+                      </>
+                    )}
+                  </div>
 
-            <div className="flex-1 overflow-y-auto p-5">
-              <div className="max-w-3xl mx-auto">
-                {selectedContent.hasThinking && (
-                  <div className="mb-6 bg-amber-50 border border-amber-200 rounded-lg overflow-hidden">
+                  {editingId !== selectedSummary.id ? (
+                    <div className="flex items-center gap-3">
+                      <IconButton
+                        title="Rename summary"
+                        onClick={() => handleStartEdit(selectedSummary)}
+                      >
+                        <FiEdit2 size={17} />
+                      </IconButton>
+                      <IconButton
+                        title="Download summary"
+                        onClick={() => downloadSummary(selectedSummary)}
+                      >
+                        <FiDownload size={17} />
+                      </IconButton>
+                      <IconButton
+                        title="Delete summary"
+                        onClick={() => handleDelete(selectedSummary.id)}
+                        disabled={deleteMutation.isPending}
+                        className="text-rose-600 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-700"
+                      >
+                        <FiTrash2 size={17} />
+                      </IconButton>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="min-h-0 flex-1 rounded-[32px] border border-slate-200 bg-white shadow-sm">
+                <div className="flex h-full min-h-0 flex-col">
+                  {parsedContent.hasThinking ? (
                     <button
+                      type="button"
                       onClick={() =>
                         setShowThinking((prev) => ({
                           ...prev,
-                          [selectedSummaryId]: !prev[selectedSummaryId],
+                          [selectedSummary.id]: !prev[selectedSummary.id],
                         }))
                       }
-                      className="w-full flex items-center justify-between px-4 py-3 hover:bg-amber-100 transition-colors"
+                      className="flex min-h-14 items-center justify-between border-b border-slate-200 px-6 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-inset"
                     >
-                      <div className="flex items-center gap-2 text-amber-800 font-medium">
-                        {showThinking[selectedSummaryId] ? (
-                          <FiEyeOff size={18} />
-                        ) : (
-                          <FiEye size={18} />
-                        )}
-                        <span>AI Thinking Process</span>
-                      </div>
-                      {showThinking[selectedSummaryId] ? (
-                        <FiChevronUp className="text-amber-600" />
+                      <span>AI Thinking Process</span>
+                      {showThinking[selectedSummary.id] ? (
+                        <FiChevronUp size={18} />
                       ) : (
-                        <FiChevronDown className="text-amber-600" />
+                        <FiChevronDown size={18} />
                       )}
                     </button>
-                    {showThinking[selectedSummaryId] && (
-                      <div className="px-4 py-3 border-t border-amber-200 bg-white">
-                        <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-wrap">
-                          {selectedContent.thinkingContent}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                  ) : null}
 
-                <div className="bg-white rounded-lg border border-slate-100 p-5">
-                  <div className="prose prose-slate prose-sm max-w-none">
-                    <ReactMarkdown>
-                      {selectedContent.cleanContent}
-                    </ReactMarkdown>
+                  {parsedContent.hasThinking && showThinking[selectedSummary.id] ? (
+                    <div className="border-b border-slate-200 bg-slate-50 px-6 py-4 text-sm leading-7 text-slate-600">
+                      <div className="whitespace-pre-wrap">
+                        {parsedContent.thinkingContent}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 sm:px-8">
+                    <article className="mx-auto max-w-4xl rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
+                      <div className="prose max-w-none text-[15px] leading-7 text-slate-700">
+                        <ReactMarkdown>{parsedContent.cleanContent}</ReactMarkdown>
+                      </div>
+                    </article>
                   </div>
                 </div>
               </div>
             </div>
+          )}
+        </div>
+      </div>
+
+      <Drawer
+        open={showHistoryDrawer}
+        onClose={() => setShowHistoryDrawer(false)}
+        title="Summary History"
+        description="Open a saved summary, rename it, or export a copy."
+      >
+        {safeSummaries.length === 0 ? (
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center">
+            <p className="text-sm font-medium text-slate-700">
+              No saved summaries yet
+            </p>
+            <p className="mt-1 text-sm text-slate-500">
+              Generate one to start building history for this document.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {safeSummaries.map((summary) => {
+              const isActive = summary.id === selectedSummaryId;
+
+              return (
+                <button
+                  type="button"
+                  key={summary.id}
+                  onClick={() => {
+                    setSelectedSummaryId(summary.id);
+                    setShowHistoryDrawer(false);
+                  }}
+                  className={`w-full rounded-2xl border p-4 text-left transition ${
+                    isActive
+                      ? "border-teal-200 bg-teal-50"
+                      : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
+                  }`}
+                >
+                  <p className="line-clamp-2 text-sm font-semibold text-slate-900">
+                    {summary.title}
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                    <span>{formatDate(summary.createdAt)}</span>
+                    <span className="h-1 w-1 rounded-full bg-slate-300" />
+                    <span>{summary.wordCount} words</span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
-      </div>
-    </div>
+      </Drawer>
+
+      <Modal
+        open={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="New Summary"
+        description="Create another summary version without disturbing your existing ones."
+      >
+        <div className="space-y-5">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-slate-700">
+              Title
+              <span className="ml-1 text-slate-400">(optional)</span>
+            </label>
+            <input
+              type="text"
+              value={customTitle}
+              onChange={(event) => setCustomTitle(event.target.value)}
+              placeholder="e.g., Midterm revision summary"
+              className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGenerateSummary}
+            disabled={createMutation.isPending}
+            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <FiPlus size={16} />
+            {createMutation.isPending ? "Generating..." : "Generate Summary"}
+          </button>
+        </div>
+      </Modal>
+    </>
   );
 };

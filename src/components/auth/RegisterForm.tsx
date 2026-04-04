@@ -95,7 +95,7 @@ const RegisterForm = () => {
       <div className="w-full max-w-lg">
         <div className="text-center mb-4 md:mb-5">
           <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-1.5 md:mb-2">
-            Create Account âœ¨
+            Create Account
           </h1>
           <p className="text-sm md:text-base text-slate-600 font-medium">
             Start your AI-powered learning journey today

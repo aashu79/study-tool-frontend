@@ -12,8 +12,8 @@ const DocumentViewerTabs = ({
   onTabChange,
 }: DocumentViewerTabsProps) => {
   return (
-    <div className="rounded-xl bg-white border border-slate-200/80 p-1 shadow-sm">
-      <div className="flex gap-1">
+    <div className="rounded-[22px] border border-slate-200 bg-white p-1.5 shadow-sm">
+      <div className="flex flex-wrap gap-1.5">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -22,23 +22,17 @@ const DocumentViewerTabs = ({
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`group relative flex-1 overflow-hidden rounded-lg px-3 py-2.5 text-center transition-all duration-200 ${
+              className={`group relative inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${
                 isActive
-                  ? `${tab.activeClasses} shadow-sm`
-                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-50"
+                  ? "bg-teal-600 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <div
-                className={`absolute inset-x-0 bottom-0 h-0.5 bg-linear-to-r ${tab.glowClasses} ${
-                  isActive
-                    ? "opacity-100"
-                    : "opacity-0 group-hover:opacity-40 transition-opacity"
-                }`}
-              />
-              <div className="flex items-center justify-center gap-2">
-                <Icon size={15} />
-                <span className="font-semibold text-sm">{tab.label}</span>
-              </div>
+              <Icon size={16} />
+              <span>{tab.label}</span>
+              {!isActive ? (
+                <span className="pointer-events-none absolute inset-x-4 bottom-1 h-0.5 rounded-full bg-slate-300 opacity-0 transition group-hover:opacity-100" />
+              ) : null}
             </button>
           );
         })}

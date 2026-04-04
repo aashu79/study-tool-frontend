@@ -155,7 +155,7 @@ const Landing = () => {
 
               <p className="text-xl sm:text-2xl text-slate-600 leading-relaxed font-medium">
                 Upload your notes and let AI create summaries, flashcards,
-                quizzes & provide personalized tutoringâ€”all in one powerful
+                quizzes and provide personalized tutoring - all in one powerful
                 platform.
               </p>
 
@@ -353,7 +353,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in">
             <span className="inline-block px-5 py-2.5 bg-linear-to-r from-emerald-100 to-teal-100 text-teal-700 rounded-full text-sm font-bold mb-4 border border-teal-200/50">
-              âœ¨ Features
+              Features
             </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 mb-6">
               Everything You Need to Excel
@@ -395,7 +395,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <span className="inline-block px-5 py-2.5 bg-linear-to-r from-orange-100 to-amber-100 text-orange-700 rounded-full text-sm font-bold mb-4 border border-orange-200/50">
-              ðŸš€ How It Works
+              How It Works
             </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 mb-6">
               Start Learning in 3 Simple Steps
@@ -473,7 +473,7 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <span className="inline-block px-5 py-2.5 bg-white text-teal-700 rounded-full text-sm font-bold mb-4 shadow-lg border-2 border-teal-200/50">
-              ðŸ’¬ Testimonials
+              Testimonials
             </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 mb-6">
               Loved by Students Worldwide
@@ -551,7 +551,7 @@ const Landing = () => {
               </Button>
             </Link>
             <p className="text-white/90 text-base font-bold">
-              âœ¨ No credit card required â€¢ Free forever plan available
+              No credit card required - Free forever plan available
             </p>
           </div>
         </div>

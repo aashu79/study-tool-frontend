@@ -1,4 +1,12 @@
-import { FiArrowLeft, FiBookOpen, FiPlay, FiSquare } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiBookOpen,
+  FiColumns,
+  FiFileText,
+  FiPlay,
+  FiSidebar,
+  FiSquare,
+} from "react-icons/fi";
 
 interface DocumentViewerHeaderProps {
   fileName: string;
@@ -28,102 +36,114 @@ const DocumentViewerHeader = ({
   onSetPanelState,
 }: DocumentViewerHeaderProps) => {
   return (
-    <div className="relative overflow-hidden bg-linear-to-r from-slate-900 via-emerald-900 to-teal-900 text-white shadow-lg">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.15),transparent_50%)]" />
-      <div className="absolute -left-16 -top-16 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl" />
-      <div className="absolute -right-16 -bottom-16 h-48 w-48 rounded-full bg-teal-500/10 blur-3xl" />
-      <div className="relative px-4 py-3.5 sm:px-6 sm:py-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+    <header className="border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="px-4 py-4 sm:px-8">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3 sm:gap-4">
             <button
               onClick={onBackToDashboard}
               disabled={isSessionEnding}
-              className="shrink-0 flex items-center gap-1.5 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 border border-white/15 hover:border-white/25"
+              className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <FiArrowLeft size={15} />
-              <span className="font-medium text-sm hidden sm:inline">
+              <span className="hidden sm:inline">
                 {isSessionEnding ? "Ending..." : "Back"}
               </span>
             </button>
-            <div className="hidden sm:block w-px h-8 bg-white/20" />
-            <div className="hidden sm:flex p-2 bg-emerald-500/20 rounded-lg border border-emerald-400/20">
-              <FiBookOpen size={18} />
+
+            <div className="hidden h-8 w-px bg-slate-200 sm:block" />
+
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-teal-100 bg-teal-50 text-teal-700 shadow-sm">
+              <FiBookOpen size={20} />
             </div>
-            <div className="min-w-0">
-              <h1 className="text-base sm:text-lg font-semibold truncate max-w-[40vw] lg:max-w-xl">
+
+            <div className="min-w-0 space-y-1">
+              <h1 className="truncate text-lg font-semibold text-slate-900 sm:text-xl">
                 {fileName}
               </h1>
-              <p className="text-xs text-white/60 mt-0.5 truncate">
-                {mimeType || "Document"}
-              </p>
+
+              <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+                <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+                  <FiFileText size={12} />
+                  {mimeType || "Document"}
+                </span>
+
+                {isStudySessionActive ? (
+                  <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                    </span>
+                    Study session active
+                  </span>
+                ) : null}
+
+                {isSessionBootstrapLoading ? (
+                  <span className="inline-flex items-center gap-2 text-xs text-slate-500">
+                    <span className="h-3.5 w-3.5 rounded-full border-2 border-slate-300 border-t-teal-600 animate-spin" />
+                    Checking session
+                  </span>
+                ) : null}
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            {isStudySessionActive ? (
-              <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1.5">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-                  </span>
-                  <span className="text-xs font-medium text-emerald-300">
-                    Session Active
-                  </span>
-                </div>
-                <button
-                  onClick={onEndSession}
-                  disabled={isSessionEnding}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium bg-red-500/80 hover:bg-red-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-sm shadow-red-500/20"
-                >
-                  <FiSquare size={13} />
-                  {isSessionEnding ? "Ending..." : "End Session"}
-                </button>
-              </div>
-            ) : isSessionBootstrapLoading ? (
-              <div className="flex items-center gap-2 text-white/60 text-xs">
-                <span className="h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white/80 animate-spin" />
-                <span className="hidden sm:inline">Checking session...</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <p className="hidden sm:block text-xs text-white/50 max-w-[14rem] leading-tight">
-                  Start a session to track your focus time
-                </p>
-                <button
-                  onClick={onStartSession}
-                  disabled={isSessionStarting}
-                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-sm shadow-emerald-500/30"
-                >
-                  <FiPlay size={13} />
-                  {isSessionStarting ? "Starting..." : "Start Session"}
-                </button>
-              </div>
-            )}
-
-            <div className="hidden md:flex items-center rounded-lg bg-white/8 p-0.5 border border-white/10">
-              {(["both", "document", "content"] as const).map((state) => (
-                <button
-                  key={state}
-                  onClick={() => onSetPanelState(state)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
-                    panelState === state
-                      ? "bg-white/15 text-white shadow-sm"
-                      : "text-white/50 hover:text-white/80"
-                  }`}
-                >
-                  {state === "both"
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <div className="hidden items-center rounded-2xl border border-slate-200 bg-slate-50 p-1 md:flex">
+              {(["both", "document", "content"] as const).map((state) => {
+                const label =
+                  state === "both"
                     ? "Split"
                     : state === "document"
-                      ? "Doc"
-                      : "Content"}
-                </button>
-              ))}
+                      ? "Document"
+                      : "Study";
+                const Icon =
+                  state === "both"
+                    ? FiColumns
+                    : state === "document"
+                      ? FiFileText
+                      : FiSidebar;
+
+                return (
+                  <button
+                    key={state}
+                    onClick={() => onSetPanelState(state)}
+                    className={`inline-flex h-11 items-center gap-2 rounded-xl px-4 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${
+                      panelState === state
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-600 hover:bg-white hover:text-slate-900"
+                    }`}
+                  >
+                    <Icon size={15} />
+                    {label}
+                  </button>
+                );
+              })}
             </div>
+
+            {isStudySessionActive ? (
+              <button
+                onClick={onEndSession}
+                disabled={isSessionEnding}
+                className="inline-flex h-11 items-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <FiSquare size={13} />
+                {isSessionEnding ? "Ending..." : "End Session"}
+              </button>
+            ) : (
+              <button
+                onClick={onStartSession}
+                disabled={isSessionStarting || isSessionBootstrapLoading}
+                className="inline-flex h-11 items-center gap-2 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <FiPlay size={14} />
+                {isSessionStarting ? "Starting..." : "Start Session"}
+              </button>
+            )}
           </div>
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 

@@ -1,4 +1,4 @@
-import { Badge, Avatar, Dropdown, Popover, Button } from "antd";
+import { Badge, Avatar, Dropdown, Popover } from "antd";
 import {
   FiBell,
   FiMenu,
@@ -70,7 +70,7 @@ const TopNavbar = ({
     {
       id: 2,
       title: "Study streak milestone!",
-      description: "You've reached a 5-day streak ðŸŽ¯",
+      description: "You've reached a 5-day streak",
       time: "2 hours ago",
       dot: "bg-teal-500",
     },

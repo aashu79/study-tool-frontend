@@ -19,7 +19,7 @@ import {
 import { useStudySessionReport } from "../lib/hooks/useStudySessionReport";
 import type { SessionReport } from "../lib/api/study-session.service";
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ helpers Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// helpers
 
 const formatDuration = (seconds: number) => {
   if (seconds <= 0) return "0m";
@@ -32,7 +32,7 @@ const formatDuration = (seconds: number) => {
 };
 
 const formatDate = (value?: string) => {
-  if (!value) return "Ã¢â‚¬â€";
+  if (!value) return "-";
   return new Date(value).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -49,7 +49,7 @@ const humaniseEventType = (type: string) =>
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ sub-components Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// sub-components
 
 const MiniStatCard = ({
   icon,
@@ -135,9 +135,9 @@ const FocusGauge = ({ score }: { score: number }) => {
         : "text-rose-700";
   const label =
     clamped >= 70
-      ? "Great Focus! Keep it up Ã°Å¸Å½Â¯"
+      ? "Great Focus! Keep it up"
       : clamped >= 40
-        ? "Fair Ã¢â‚¬â€ room for improvement"
+        ? "Fair - room for improvement"
         : "Needs Improvement";
 
   return (
@@ -167,7 +167,7 @@ const FocusGauge = ({ score }: { score: number }) => {
   );
 };
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ main page Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// main page
 
 const StudySessionReport = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -237,7 +237,7 @@ const StudySessionReport = () => {
                     <p className="text-white/65 text-xs mt-1">
                       {formatDate(report.session.sessionStart)}
                       {report.session.sessionEnd &&
-                        ` Ã¢â‚¬â€ ${formatDate(report.session.sessionEnd)}`}
+                        ` - ${formatDate(report.session.sessionEnd)}`}
                     </p>
                   </>
                 )}
@@ -267,7 +267,9 @@ const StudySessionReport = () => {
                     className="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/25 rounded-xl px-4 py-2.5 text-sm font-bold transition-colors disabled:opacity-50"
                   >
                     <FiMail size={14} />
-                    {sendEmailMutation.isPending ? "SendingÃ¢â‚¬Â¦" : "Email Report"}
+                    {sendEmailMutation.isPending
+                      ? "Sending..."
+                      : "Email Report"}
                   </button>
                 )}
               </div>
@@ -587,7 +589,7 @@ const StudySessionReport = () => {
               >
                 <FiMail size={14} />
                 {sendEmailMutation.isPending
-                  ? "SendingÃ¢â‚¬Â¦"
+                  ? "Sending..."
                   : report.emailDelivery.sent
                     ? "Resend Email"
                     : "Send Email"}

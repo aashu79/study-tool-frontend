@@ -1,7 +1,7 @@
 import DashboardLayout from "../components/common/DashboardLayout";
 import StatCard from "../components/dashboard/StatCard";
 import FileCard from "../components/dashboard/FileCard";
-import { Progress, Spin, Empty } from "antd";
+import { Progress, Spin } from "antd";
 import {
   FiFolder,
   FiLayers,
@@ -79,7 +79,7 @@ const Dashboard = () => {
       icon: IoFlame,
       title: "Study Streak",
       value: "5 days",
-      trend: { value: "Keep it up! ÃƒÂ°Ã…Â¸Ã…Â½Ã‚Â¯", isPositive: true },
+      trend: { value: "Keep it up!", isPositive: true },
       iconColor: "#f97316",
       iconBgColor: "#ffedd5",
     },
@@ -118,9 +118,11 @@ const Dashboard = () => {
         {/* HERO */}
         <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-emerald-500 via-teal-500 to-cyan-500 p-6 md:p-8 text-white shadow-lg shadow-emerald-200">
           {/* Dot grid */}
-          <div className="absolute inset-0 opacity-20"
+          <div
+            className="absolute inset-0 opacity-20"
             style={{
-              backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)",
+              backgroundImage:
+                "radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)",
               backgroundSize: "28px 28px",
             }}
           />
@@ -135,10 +137,14 @@ const Dashboard = () => {
                 5-day streak going strong!
               </div>
               <h1 className="text-2xl md:text-3xl font-black mb-1.5 tracking-tight">
-                {getGreeting()}, {displayName}! ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ¢â‚¬Â¹
+                {getGreeting()}, {displayName}!
               </h1>
               <p className="text-white/85 text-sm md:text-base font-medium">
-                You have <span className="font-bold text-white">3 pending materials</span> to review today.
+                You have{" "}
+                <span className="font-bold text-white">
+                  3 pending materials
+                </span>{" "}
+                to review today.
               </p>
             </div>
 
@@ -146,7 +152,9 @@ const Dashboard = () => {
             <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 min-w-[240px]">
               <div className="flex items-center justify-between mb-2.5">
                 <span className="font-bold text-sm">Weekly Goal</span>
-                <span className="text-white/80 text-sm font-semibold">12 / 20</span>
+                <span className="text-white/80 text-sm font-semibold">
+                  12 / 20
+                </span>
               </div>
               <Progress
                 percent={60}
@@ -155,7 +163,9 @@ const Dashboard = () => {
                 showInfo={false}
                 strokeWidth={8}
               />
-              <p className="text-white/70 text-xs mt-2 font-medium">8 assignments left this week</p>
+              <p className="text-white/70 text-xs mt-2 font-medium">
+                8 assignments left this week
+              </p>
             </div>
           </div>
         </div>
@@ -181,10 +191,13 @@ const Dashboard = () => {
                   <Icon size={18} />
                 </div>
                 <div className="flex-1">
-                  <p className="font-bold text-sm">{action.label}</p>
-                  <p className="text-white/75 text-xs">{action.desc}</p>
+                  <p className="font-bold text-sm text-white">{action.label}</p>
+                  <p className="text-white/90 text-xs">{action.desc}</p>
                 </div>
-                <FiArrowRight size={16} className="opacity-70 group-hover:translate-x-1 transition-transform" />
+                <FiArrowRight
+                  size={16}
+                  className="opacity-70 group-hover:translate-x-1 transition-transform"
+                />
               </Link>
             );
           })}
@@ -196,15 +209,22 @@ const Dashboard = () => {
           <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h3 className="text-base font-bold text-slate-800">Latest Study Materials</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Your recently uploaded files</p>
+                <h3 className="text-base font-bold text-slate-800">
+                  Latest Study Materials
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Your recently uploaded files
+                </p>
               </div>
               <Link
                 to="/my-materials"
                 className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors group bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-xl"
               >
                 View All
-                <FiArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+                <FiArrowRight
+                  size={13}
+                  className="group-hover:translate-x-0.5 transition-transform"
+                />
               </Link>
             </div>
 
@@ -223,8 +243,12 @@ const Dashboard = () => {
                 <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-3">
                   <FiFolder size={24} className="text-emerald-500" />
                 </div>
-                <p className="font-semibold text-slate-700 mb-1">No materials yet</p>
-                <p className="text-xs text-slate-400 mb-4">Start uploading your notes, PDFs and documents</p>
+                <p className="font-semibold text-slate-700 mb-1">
+                  No materials yet
+                </p>
+                <p className="text-xs text-slate-400 mb-4">
+                  Start uploading your notes, PDFs and documents
+                </p>
                 <Link
                   to="/upload"
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-emerald-500 to-teal-600 text-white font-bold text-sm rounded-xl shadow-sm shadow-emerald-200 hover:shadow-md transition-all"
@@ -238,44 +262,49 @@ const Dashboard = () => {
 
           {/* Recent Activity */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-            <h3 className="text-base font-bold text-slate-800 mb-4">Recent Activity</h3>
+            <h3 className="text-base font-bold text-slate-800 mb-4">
+              Recent Activity
+            </h3>
             <div className="space-y-1">
               <ActivityItem
                 icon={<FiTarget size={16} />}
                 bg="bg-emerald-100"
                 color="text-emerald-600"
                 title="Completed Calculus Quiz"
-                subtitle="Score: 85% Ãƒâ€šÃ‚Â· 2h ago"
+                subtitle="Score: 85% - 2h ago"
               />
               <ActivityItem
                 icon={<FiFolder size={16} />}
                 bg="bg-blue-100"
                 color="text-blue-600"
                 title="Uploaded new notes"
-                subtitle="Organic Chemistry Ãƒâ€šÃ‚Â· 1d ago"
+                subtitle="Organic Chemistry - 1d ago"
               />
               <ActivityItem
                 icon={<FiLayers size={16} />}
                 bg="bg-amber-100"
                 color="text-amber-600"
                 title="Reviewed flashcards"
-                subtitle="Biology (25 cards) Ãƒâ€šÃ‚Â· 2d ago"
+                subtitle="Biology (25 cards) - 2d ago"
               />
               <ActivityItem
                 icon={<FiActivity size={16} />}
                 bg="bg-purple-100"
                 color="text-purple-600"
                 title="Study session ended"
-                subtitle="Focus score: 92% Ãƒâ€šÃ‚Â· 3d ago"
+                subtitle="Focus score: 92% - 3d ago"
               />
             </div>
 
             {/* Study tip */}
             <div className="mt-5 pt-4 border-t border-slate-100">
               <div className="rounded-xl bg-linear-to-br from-amber-50 to-orange-50 border border-amber-100 p-3.5">
-                <p className="text-xs font-bold text-amber-800 mb-1">ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â¡ Study Tip</p>
+                <p className="text-xs font-bold text-amber-800 mb-1">
+                  Study Tip
+                </p>
                 <p className="text-xs text-amber-700 leading-relaxed">
-                  Review flashcards daily for 15 minutes to boost long-term retention by up to 80%.
+                  Review flashcards daily for 15 minutes to boost long-term
+                  retention by up to 80%.
                 </p>
               </div>
             </div>

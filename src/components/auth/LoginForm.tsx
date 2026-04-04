@@ -28,7 +28,7 @@ const LoginForm = () => {
       <div className="relative">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-black text-slate-900 mb-3">
-            Welcome Back ðŸ‘‹
+            Welcome Back
           </h1>
           <p className="text-lg text-slate-600 font-medium">
             Sign in to continue your learning journey

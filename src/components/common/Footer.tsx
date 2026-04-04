@@ -138,7 +138,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-teal-100/50 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-slate-500 font-medium">
-            Â© {currentYear} StudyAI. All rights reserved.
+            (c) {currentYear} StudyAI. All rights reserved.
           </p>
 
           <p className="text-sm text-slate-600 flex items-center gap-2 font-medium">
