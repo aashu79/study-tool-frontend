@@ -149,7 +149,7 @@ const Dashboard = () => {
             </div>
 
             {/* Weekly goal */}
-            <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 min-w-[240px]">
+            <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 min-w-60">
               <div className="flex items-center justify-between mb-2.5">
                 <span className="font-bold text-sm">Weekly Goal</span>
                 <span className="text-white/80 text-sm font-semibold">
@@ -178,7 +178,7 @@ const Dashboard = () => {
         </div>
 
         {/* QUICK ACTIONS */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (
@@ -260,52 +260,52 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Recent Activity */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-            <h3 className="text-base font-bold text-slate-800 mb-4">
-              Recent Activity
-            </h3>
-            <div className="space-y-1">
-              <ActivityItem
-                icon={<FiTarget size={16} />}
-                bg="bg-emerald-100"
-                color="text-emerald-600"
-                title="Completed Calculus Quiz"
-                subtitle="Score: 85% - 2h ago"
-              />
-              <ActivityItem
-                icon={<FiFolder size={16} />}
-                bg="bg-blue-100"
-                color="text-blue-600"
-                title="Uploaded new notes"
-                subtitle="Organic Chemistry - 1d ago"
-              />
-              <ActivityItem
-                icon={<FiLayers size={16} />}
-                bg="bg-amber-100"
-                color="text-amber-600"
-                title="Reviewed flashcards"
-                subtitle="Biology (25 cards) - 2d ago"
-              />
-              <ActivityItem
-                icon={<FiActivity size={16} />}
-                bg="bg-purple-100"
-                color="text-purple-600"
-                title="Study session ended"
-                subtitle="Focus score: 92% - 3d ago"
-              />
-            </div>
+          <div>
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+              <h3 className="text-base font-bold text-slate-800 mb-4">
+                Recent Activity
+              </h3>
+              <div className="space-y-1">
+                <ActivityItem
+                  icon={<FiTarget size={16} />}
+                  bg="bg-emerald-100"
+                  color="text-emerald-600"
+                  title="Completed Calculus Quiz"
+                  subtitle="Score: 85% - 2h ago"
+                />
+                <ActivityItem
+                  icon={<FiFolder size={16} />}
+                  bg="bg-blue-100"
+                  color="text-blue-600"
+                  title="Uploaded new notes"
+                  subtitle="Organic Chemistry - 1d ago"
+                />
+                <ActivityItem
+                  icon={<FiLayers size={16} />}
+                  bg="bg-amber-100"
+                  color="text-amber-600"
+                  title="Reviewed flashcards"
+                  subtitle="Biology (25 cards) - 2d ago"
+                />
+                <ActivityItem
+                  icon={<FiActivity size={16} />}
+                  bg="bg-purple-100"
+                  color="text-purple-600"
+                  title="Study session ended"
+                  subtitle="Focus score: 92% - 3d ago"
+                />
+              </div>
 
-            {/* Study tip */}
-            <div className="mt-5 pt-4 border-t border-slate-100">
-              <div className="rounded-xl bg-linear-to-br from-amber-50 to-orange-50 border border-amber-100 p-3.5">
-                <p className="text-xs font-bold text-amber-800 mb-1">
-                  Study Tip
-                </p>
-                <p className="text-xs text-amber-700 leading-relaxed">
-                  Review flashcards daily for 15 minutes to boost long-term
-                  retention by up to 80%.
-                </p>
+              <div className="mt-5 pt-4 border-t border-slate-100">
+                <div className="rounded-xl bg-linear-to-br from-amber-50 to-orange-50 border border-amber-100 p-3.5">
+                  <p className="text-xs font-bold text-amber-800 mb-1">
+                    Study Tip
+                  </p>
+                  <p className="text-xs text-amber-700 leading-relaxed">
+                    Review flashcards daily for 15 minutes to boost long-term
+                    retention by up to 80%.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

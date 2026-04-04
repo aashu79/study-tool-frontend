@@ -4,6 +4,7 @@ import { ImprovedSummaryTab } from "./ImprovedSummaryTab";
 import { QuizTab } from "./QuizTab";
 import { FlashcardsTab } from "./FlashcardsTab";
 import { DocumentChatTab } from "./DocumentChatTab";
+import { StudyPlanTab } from "./StudyPlanTab";
 import ProcessingStatusDisplay from "./ProcessingStatusDisplay";
 
 interface DocumentViewerContentProps {
@@ -11,7 +12,7 @@ interface DocumentViewerContentProps {
   fileUrl: string;
   fileName: string;
   mimeType: string;
-  activeTab: "summary" | "quiz" | "flashcards" | "chat";
+  activeTab: "summary" | "quiz" | "flashcards" | "chat" | "study-plans";
   panelState: "both" | "document" | "content";
   processingStatus: string;
   studySessionId: string | null;
@@ -118,8 +119,10 @@ const DocumentViewerContent = ({
 
             <div className="min-h-0 flex-1 px-2 pb-2 pt-4 sm:px-3">
               <div
-                className={`h-full min-h-0 rounded-[24px] bg-slate-50 ${
-                  activeTab === "chat" ? "overflow-hidden" : "overflow-y-auto"
+                className={`h-full min-h-0 rounded-3xl bg-slate-50 ${
+                  activeTab === "chat" || activeTab === "study-plans"
+                    ? "overflow-hidden"
+                    : "overflow-y-auto"
                 }`}
               >
                 {activeTab === "summary" ? (
@@ -140,6 +143,12 @@ const DocumentViewerContent = ({
                 ) : null}
                 {activeTab === "chat" ? (
                   <DocumentChatTab
+                    fileId={fileId}
+                    processingStatus={processingStatus}
+                  />
+                ) : null}
+                {activeTab === "study-plans" ? (
+                  <StudyPlanTab
                     fileId={fileId}
                     processingStatus={processingStatus}
                   />

@@ -4,10 +4,16 @@ import {
   FiHelpCircle,
   FiCreditCard,
   FiMessageCircle,
+  FiMap,
 } from "react-icons/fi";
 import type { StudyEventType } from "../api/study-session.service";
 
-export type TabType = "summary" | "quiz" | "flashcards" | "chat";
+export type TabType =
+  | "summary"
+  | "quiz"
+  | "flashcards"
+  | "chat"
+  | "study-plans";
 
 export interface Tab {
   id: TabType;
@@ -63,6 +69,15 @@ export const useTabs = (
       iconClasses: "bg-sky-100 text-sky-700",
       glowClasses: "from-sky-500 to-cyan-500",
     },
+    {
+      id: "study-plans" as TabType,
+      label: "Study Plans",
+      icon: FiMap,
+      activeClasses:
+        "text-teal-700 bg-teal-50 border-teal-200 shadow-teal-100/70",
+      iconClasses: "bg-teal-100 text-teal-700",
+      glowClasses: "from-teal-500 to-emerald-500",
+    },
   ];
 
   useEffect(() => {
@@ -88,9 +103,17 @@ export const useTabs = (
       return;
     }
 
+    if (activeTab === "chat") {
+      logStudyEvent("CUSTOM_ACTIVITY", {
+        source: "document_viewer",
+        activity: "OPEN_DOCUMENT_CHAT_TAB",
+      });
+      return;
+    }
+
     logStudyEvent("CUSTOM_ACTIVITY", {
       source: "document_viewer",
-      activity: "OPEN_DOCUMENT_CHAT_TAB",
+      activity: "OPEN_STUDY_PLANS_TAB",
     });
   }, [activeTab, logStudyEvent, studySessionId]);
 
