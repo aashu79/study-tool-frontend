@@ -160,7 +160,9 @@ const asRecord = (value: unknown): Record<string, unknown> =>
     : ({} as Record<string, unknown>);
 
 const asString = (value: unknown): string | undefined =>
-  typeof value === "string" && value.trim().length > 0 ? value.trim() : undefined;
+  typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : undefined;
 
 const asNumber = (value: unknown, fallback = 0): number => {
   const parsed = typeof value === "number" ? value : Number(value);
@@ -212,9 +214,42 @@ const mapInsight = (value: unknown): QuizInsight | null => {
   };
 };
 
+const hasInlineInsightFields = (source: Record<string, unknown>): boolean => {
+  if (source.hasInsights === true) {
+    return true;
+  }
+
+  if (Array.isArray(source.weakAreas) && source.weakAreas.length > 0) {
+    return true;
+  }
+
+  return (
+    typeof source.strengths === "string" ||
+    typeof source.weaknesses === "string" ||
+    typeof source.detailedInsights === "string" ||
+    typeof source.recommendedActions === "string"
+  );
+};
+
+const mapAttemptInsight = (
+  source: Record<string, unknown>,
+): QuizInsight | null => {
+  const nestedInsight = mapInsight(source.insight ?? source.insights);
+  if (nestedInsight) {
+    return nestedInsight;
+  }
+
+  if (!hasInlineInsightFields(source)) {
+    return null;
+  }
+
+  return mapInsight(source);
+};
+
 const mapQuestion = (value: unknown, fallbackIndex = 0): QuizQuestion => {
   const source = asRecord(value);
-  const id = pickString(source.id, source.questionId) ?? `question-${fallbackIndex + 1}`;
+  const id =
+    pickString(source.id, source.questionId) ?? `question-${fallbackIndex + 1}`;
   const options = asStringArray(source.options);
 
   return {
@@ -235,12 +270,16 @@ const mapAttemptAnswer = (value: unknown, index: number): QuizAttemptAnswer => {
   const selectedOptionIndex = asNumber(source.selectedOptionIndex, -1);
   const fallbackCorrectIndex = question.correctOptionIndex;
   const resolvedCorrectIndex =
-    asNumber(source.correctOptionIndex, fallbackCorrectIndex) ?? fallbackCorrectIndex;
+    asNumber(source.correctOptionIndex, fallbackCorrectIndex) ??
+    fallbackCorrectIndex;
 
   const normalizedQuestion: QuizQuestion = {
     ...question,
     correctOptionIndex: resolvedCorrectIndex,
-    questionIndex: asNumber(source.questionIndex, question.questionIndex ?? index + 1),
+    questionIndex: asNumber(
+      source.questionIndex,
+      question.questionIndex ?? index + 1,
+    ),
     explanation: pickString(source.explanation, question.explanation),
   };
 
@@ -258,7 +297,8 @@ const mapAttemptAnswer = (value: unknown, index: number): QuizAttemptAnswer => {
   return {
     id: pickString(source.id) ?? `${normalizedQuestion.id}-${index + 1}`,
     questionId:
-      pickString(source.questionId, normalizedQuestion.id) ?? normalizedQuestion.id,
+      pickString(source.questionId, normalizedQuestion.id) ??
+      normalizedQuestion.id,
     selectedOptionIndex,
     isCorrect: Boolean(source.isCorrect),
     selectedOption,
@@ -278,7 +318,7 @@ const mapAttemptSummary = (value: unknown): QuizAttempt => {
     correctAnswers: asNumber(source.correctAnswers, 0),
     percentage: asNumber(source.percentage, 0),
     createdAt: pickString(source.createdAt, source.submittedAt) ?? "",
-    insight: mapInsight(source.insight ?? source.insights),
+    insight: mapAttemptInsight(source),
   };
 };
 
@@ -356,7 +396,7 @@ const mapSubmissionResult = (
     correctAnswers: asNumber(source.correctAnswers, 0),
     percentage: asNumber(source.percentage, 0),
     answers,
-    insight: mapInsight(source.insight ?? source.insights),
+    insight: mapAttemptInsight(source),
     createdAt: pickString(source.createdAt, source.submittedAt) ?? "",
   };
 };
@@ -382,7 +422,7 @@ const mapAttemptDetails = (value: unknown): QuizAttemptDetails => {
     correctAnswers: asNumber(source.correctAnswers, 0),
     percentage: asNumber(source.percentage, 0),
     answers,
-    insight: mapInsight(source.insight ?? source.insights),
+    insight: mapAttemptInsight(source),
     quiz: {
       id: pickString(quizSource.id, source.quizId) ?? "",
       title: pickString(quizSource.title) ?? "Quiz Attempt",
@@ -398,11 +438,16 @@ export const quizService = {
     fileId: string,
     payload?: CreateQuizRequest,
   ): Promise<QuizDetails> {
-    const response = await apiClient.post(`/api/quiz/file/${fileId}`, payload || {});
+    const response = await apiClient.post(
+      `/api/quiz/file/${fileId}`,
+      payload || {},
+    );
     return mapQuizDetails(response.data.data);
   },
 
-  async getUserQuizzes(params?: QuizListQueryParams): Promise<QuizListResponse> {
+  async getUserQuizzes(
+    params?: QuizListQueryParams,
+  ): Promise<QuizListResponse> {
     const response = await apiClient.get("/api/quiz", { params });
     const data = Array.isArray(response.data.data) ? response.data.data : [];
     return {
@@ -425,7 +470,10 @@ export const quizService = {
     quizId: string,
     payload: SubmitQuizAnswersRequest,
   ): Promise<QuizSubmissionResult> {
-    const response = await apiClient.post(`/api/quiz/${quizId}/submit`, payload);
+    const response = await apiClient.post(
+      `/api/quiz/${quizId}/submit`,
+      payload,
+    );
     return mapSubmissionResult(response.data.data, quizId);
   },
 

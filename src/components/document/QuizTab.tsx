@@ -26,15 +26,12 @@ import type {
   QuizAttemptDetails,
   QuizDifficulty,
   QuizDifficultyInput,
+  QuizInsight,
   QuizSubmissionResult,
   SubmitQuizAnswersRequest,
 } from "../../lib/api/quiz.service";
 import { toRenderableMarkdown } from "../../lib/utils/markdown";
-import {
-  Drawer,
-  Modal,
-  SkeletonBlock,
-} from "./DocumentOverlay";
+import { Drawer, Modal, SkeletonBlock } from "./DocumentOverlay";
 
 interface QuizTabProps {
   fileId: string;
@@ -134,6 +131,20 @@ const MarkdownBlock = ({ content }: { content?: string | null }) => {
   );
 };
 
+const hasInsightContent = (insight?: QuizInsight | null) => {
+  if (!insight) {
+    return false;
+  }
+
+  return Boolean(
+    insight.weakAreas.length > 0 ||
+    insight.strengths ||
+    insight.weaknesses ||
+    insight.detailedInsights ||
+    insight.recommendedActions,
+  );
+};
+
 const AttemptAccordion = ({
   attempt,
   isOpen,
@@ -141,6 +152,7 @@ const AttemptAccordion = ({
   isLoading,
   errorMessage,
   detailContent,
+  attemptInsight,
 }: {
   attempt: QuizAttempt;
   isOpen: boolean;
@@ -148,121 +160,204 @@ const AttemptAccordion = ({
   isLoading: boolean;
   errorMessage?: string;
   detailContent?: QuizAttemptDetails;
-}) => (
-  <div className="overflow-hidden rounded-2xl border border-slate-200">
-    <button
-      type="button"
-      onClick={onToggle}
-      className="flex min-h-14 w-full items-center justify-between gap-4 bg-white px-5 py-4 text-left transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-inset"
-    >
-      <div className="min-w-0">
-        <p className="text-sm font-semibold text-slate-900">
-          Attempt on {formatDateTime(attempt.createdAt)}
-        </p>
-        <p className="mt-1 text-sm text-slate-500">
-          {attempt.correctAnswers}/{attempt.totalQuestions} correct
-        </p>
-      </div>
-      <div className="flex items-center gap-3">
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold ${getScoreBadge(
-            attempt.percentage,
-          )}`}
-        >
-          {attempt.percentage.toFixed(1)}%
-        </span>
-        <FiChevronDown
-          size={18}
-          className={`text-slate-400 transition ${isOpen ? "rotate-180" : ""}`}
-        />
-      </div>
-    </button>
+  attemptInsight?: QuizInsight | null;
+}) => {
+  const resolvedInsight = detailContent?.insight ?? attemptInsight;
+  const shouldShowInsights = hasInsightContent(resolvedInsight);
 
-    {isOpen ? (
-      <div className="border-t border-slate-200 bg-slate-50 px-5 py-5">
-        {isLoading ? (
-          <div className="space-y-3">
-            <SkeletonBlock className="h-16 w-full rounded-2xl" />
-            <SkeletonBlock className="h-32 w-full rounded-2xl" />
-          </div>
-        ) : errorMessage ? (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
-            {errorMessage}
-          </div>
-        ) : detailContent ? (
-          <div className="space-y-4">
-            {detailContent.answers.map((answer, index) => {
-              const question = answer.question;
+  return (
+    <div className="overflow-hidden rounded-2xl border border-slate-200">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex min-h-14 w-full items-center justify-between gap-4 bg-white px-5 py-4 text-left transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-inset"
+      >
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-slate-900">
+            Attempt on {formatDateTime(attempt.createdAt)}
+          </p>
+          <p className="mt-1 text-sm text-slate-500">
+            {attempt.correctAnswers}/{attempt.totalQuestions} correct
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${getScoreBadge(
+              attempt.percentage,
+            )}`}
+          >
+            {attempt.percentage.toFixed(1)}%
+          </span>
+          <FiChevronDown
+            size={18}
+            className={`text-slate-400 transition ${isOpen ? "rotate-180" : ""}`}
+          />
+        </div>
+      </button>
 
-              return (
-                <div
-                  key={answer.id}
-                  className="rounded-2xl border border-slate-200 bg-white p-5"
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <p className="text-sm font-semibold text-slate-900">
-                      Q{question.questionIndex ?? index + 1}. {question.questionText}
-                    </p>
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
-                        answer.isCorrect
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-rose-100 text-rose-700"
-                      }`}
-                    >
-                      {answer.isCorrect ? (
-                        <FiCheckCircle size={14} />
-                      ) : (
-                        <FiXCircle size={14} />
-                      )}
-                      {answer.isCorrect ? "Correct" : "Incorrect"}
-                    </span>
-                  </div>
+      {isOpen ? (
+        <div className="border-t border-slate-200 bg-slate-50 px-5 py-5">
+          {isLoading ? (
+            <div className="space-y-3">
+              <SkeletonBlock className="h-16 w-full rounded-2xl" />
+              <SkeletonBlock className="h-32 w-full rounded-2xl" />
+            </div>
+          ) : errorMessage ? (
+            <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+              {errorMessage}
+            </div>
+          ) : detailContent ? (
+            <div className="space-y-4">
+              {shouldShowInsights ? (
+                <div className="rounded-2xl border border-teal-200 bg-teal-50 p-5">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">
+                    AI Insights
+                  </p>
 
-                  <div className="mt-4 grid gap-2">
-                    {question.options.map((option, optionIndex) => {
-                      const isSelected = optionIndex === answer.selectedOptionIndex;
-                      const isCorrect = optionIndex === question.correctOptionIndex;
+                  {resolvedInsight?.weakAreas?.length ? (
+                    <div className="mt-3">
+                      <p className="text-sm font-semibold text-slate-800">
+                        Weak Areas
+                      </p>
+                      <ul className="mt-2 flex flex-wrap gap-2">
+                        {resolvedInsight.weakAreas.map((area, index) => (
+                          <li
+                            key={`${resolvedInsight.id}-weak-area-${index}`}
+                            className="rounded-full border border-amber-200 bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800"
+                          >
+                            {area}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
 
-                      return (
-                        <div
-                          key={`${answer.id}-${optionIndex}`}
-                          className={`rounded-xl border px-4 py-3 text-sm ${
-                            isCorrect
-                              ? "border-emerald-300 bg-emerald-50 text-emerald-900"
-                              : isSelected
-                                ? "border-rose-300 bg-rose-50 text-rose-900"
-                                : "border-slate-200 bg-white text-slate-700"
-                          }`}
-                        >
-                          <span className="mr-2 font-semibold">
-                            {String.fromCharCode(65 + optionIndex)}.
-                          </span>
-                          {option}
-                        </div>
-                      );
-                    })}
-                  </div>
+                  {resolvedInsight?.strengths ? (
+                    <div className="mt-3">
+                      <p className="text-sm font-semibold text-slate-800">
+                        Strengths
+                      </p>
+                      <p className="mt-1 text-sm text-slate-700">
+                        {resolvedInsight.strengths}
+                      </p>
+                    </div>
+                  ) : null}
 
-                  {question.explanation ? (
-                    <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  {resolvedInsight?.weaknesses ? (
+                    <div className="mt-3">
+                      <p className="text-sm font-semibold text-slate-800">
+                        Weaknesses
+                      </p>
+                      <p className="mt-1 text-sm text-slate-700">
+                        {resolvedInsight.weaknesses}
+                      </p>
+                    </div>
+                  ) : null}
+
+                  {resolvedInsight?.detailedInsights ? (
+                    <div className="mt-3 rounded-2xl border border-teal-100 bg-white p-4">
                       <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        Explanation
+                        Detailed Insights
                       </p>
                       <div className="mt-2">
-                        <MarkdownBlock content={question.explanation} />
+                        <MarkdownBlock
+                          content={resolvedInsight.detailedInsights}
+                        />
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {resolvedInsight?.recommendedActions ? (
+                    <div className="mt-3 rounded-2xl border border-teal-100 bg-white p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                        Recommended Actions
+                      </p>
+                      <div className="mt-2">
+                        <MarkdownBlock
+                          content={resolvedInsight.recommendedActions}
+                        />
                       </div>
                     </div>
                   ) : null}
                 </div>
-              );
-            })}
-          </div>
-        ) : null}
-      </div>
-    ) : null}
-  </div>
-);
+              ) : null}
+
+              {detailContent.answers.map((answer, index) => {
+                const question = answer.question;
+
+                return (
+                  <div
+                    key={answer.id}
+                    className="rounded-2xl border border-slate-200 bg-white p-5"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <p className="text-sm font-semibold text-slate-900">
+                        Q{question.questionIndex ?? index + 1}.{" "}
+                        {question.questionText}
+                      </p>
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
+                          answer.isCorrect
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-rose-100 text-rose-700"
+                        }`}
+                      >
+                        {answer.isCorrect ? (
+                          <FiCheckCircle size={14} />
+                        ) : (
+                          <FiXCircle size={14} />
+                        )}
+                        {answer.isCorrect ? "Correct" : "Incorrect"}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 grid gap-2">
+                      {question.options.map((option, optionIndex) => {
+                        const isSelected =
+                          optionIndex === answer.selectedOptionIndex;
+                        const isCorrect =
+                          optionIndex === question.correctOptionIndex;
+
+                        return (
+                          <div
+                            key={`${answer.id}-${optionIndex}`}
+                            className={`rounded-xl border px-4 py-3 text-sm ${
+                              isCorrect
+                                ? "border-emerald-300 bg-emerald-50 text-emerald-900"
+                                : isSelected
+                                  ? "border-rose-300 bg-rose-50 text-rose-900"
+                                  : "border-slate-200 bg-white text-slate-700"
+                            }`}
+                          >
+                            <span className="mr-2 font-semibold">
+                              {String.fromCharCode(65 + optionIndex)}.
+                            </span>
+                            {option}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {question.explanation ? (
+                      <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                          Explanation
+                        </p>
+                        <div className="mt-2">
+                          <MarkdownBlock content={question.explanation} />
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  );
+};
 
 const QuizHistoryDrawer = ({
   quizzes,
@@ -533,7 +628,9 @@ export const QuizTab = ({
 
   const [page, setPage] = useState(1);
   const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null);
-  const [selectedAttemptId, setSelectedAttemptId] = useState<string | null>(null);
+  const [selectedAttemptId, setSelectedAttemptId] = useState<string | null>(
+    null,
+  );
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [showHistoryDrawer, setShowHistoryDrawer] = useState(false);
   const [mode, setMode] = useState<"overview" | "taking">("overview");
@@ -566,7 +663,10 @@ export const QuizTab = ({
       return;
     }
 
-    if (!selectedQuizId || !quizzes.some((quiz) => quiz.id === selectedQuizId)) {
+    if (
+      !selectedQuizId ||
+      !quizzes.some((quiz) => quiz.id === selectedQuizId)
+    ) {
       setSelectedQuizId(quizzes[0].id);
     }
   }, [quizzes, selectedQuizId]);
@@ -648,7 +748,9 @@ export const QuizTab = ({
     },
     onError: (error: unknown) => {
       const message =
-        error instanceof Error ? error.message : "Failed to submit quiz answers";
+        error instanceof Error
+          ? error.message
+          : "Failed to submit quiz answers";
       toast.error(message);
     },
   });
@@ -743,7 +845,8 @@ export const QuizTab = ({
               Quiz practice
             </h2>
             <p className="mt-1 text-sm text-slate-600">
-              Generate a focused quiz, start an attempt, and review your past scores.
+              Generate a focused quiz, start an attempt, and review your past
+              scores.
             </p>
           </div>
 
@@ -768,21 +871,24 @@ export const QuizTab = ({
         </div>
 
         <div className="min-h-0 flex-1 px-6 pb-6 sm:px-8 sm:pb-8">
-          {quizzesQuery.isLoading || (activeQuizId && quizDetailsQuery.isLoading) ? (
+          {quizzesQuery.isLoading ||
+          (activeQuizId && quizDetailsQuery.isLoading) ? (
             <div className="space-y-4">
               <SkeletonBlock className="h-20 w-full rounded-[28px]" />
-              <SkeletonBlock className="h-[60vh] w-full rounded-[32px]" />
+              <SkeletonBlock className="h-[60vh] w-full rounded-4xl" />
             </div>
           ) : quizzesErrorMessage ? (
             <div className="flex h-full items-center justify-center">
-              <div className="max-w-md rounded-[32px] border border-rose-200 bg-rose-50 p-8 text-center">
+              <div className="max-w-md rounded-4xl border border-rose-200 bg-rose-50 p-8 text-center">
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-rose-600 shadow-sm">
                   <FiAlertCircle size={24} />
                 </div>
                 <h3 className="mt-4 text-lg font-semibold text-slate-900">
                   Failed to load quizzes
                 </h3>
-                <p className="mt-2 text-sm text-slate-600">{quizzesErrorMessage}</p>
+                <p className="mt-2 text-sm text-slate-600">
+                  {quizzesErrorMessage}
+                </p>
                 <button
                   type="button"
                   onClick={() => quizzesQuery.refetch()}
@@ -794,7 +900,7 @@ export const QuizTab = ({
             </div>
           ) : quizzes.length === 0 ? (
             <div className="flex h-full items-center justify-center">
-              <div className="max-w-xl rounded-[32px] border border-slate-200 bg-white p-10 text-center shadow-sm">
+              <div className="max-w-xl rounded-4xl border border-slate-200 bg-white p-10 text-center shadow-sm">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-50 text-teal-600">
                   <FiClipboard size={28} />
                 </div>
@@ -802,8 +908,8 @@ export const QuizTab = ({
                   No quiz ready yet
                 </h3>
                 <p className="mt-3 text-sm leading-6 text-slate-600">
-                  Create a quiz from this document and keep the library tucked away
-                  until you need it.
+                  Create a quiz from this document and keep the library tucked
+                  away until you need it.
                 </p>
                 <button
                   type="button"
@@ -817,7 +923,7 @@ export const QuizTab = ({
             </div>
           ) : quizDetailsErrorMessage || !activeQuiz ? (
             <div className="flex h-full items-center justify-center">
-              <div className="max-w-md rounded-[32px] border border-rose-200 bg-rose-50 p-8 text-center">
+              <div className="max-w-md rounded-4xl border border-rose-200 bg-rose-50 p-8 text-center">
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-rose-600 shadow-sm">
                   <FiAlertCircle size={24} />
                 </div>
@@ -825,7 +931,8 @@ export const QuizTab = ({
                   Failed to load the selected quiz
                 </h3>
                 <p className="mt-2 text-sm text-slate-600">
-                  {quizDetailsErrorMessage ?? "Please select another quiz from history."}
+                  {quizDetailsErrorMessage ??
+                    "Please select another quiz from history."}
                 </p>
                 <button
                   type="button"
@@ -932,7 +1039,7 @@ export const QuizTab = ({
             </div>
           ) : (
             <div className="flex h-full min-h-0 flex-col gap-4">
-              <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
+              <div className="rounded-4xl border border-slate-200 bg-white p-8 shadow-sm">
                 <div className="flex flex-wrap items-center gap-3">
                   <span
                     className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${
@@ -954,8 +1061,8 @@ export const QuizTab = ({
                     {activeQuiz.title}
                   </h3>
                   <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600">
-                    Start a full attempt when you are ready, then review each attempt
-                    below with an expandable breakdown of your answers.
+                    Start a full attempt when you are ready, then review each
+                    attempt below with an expandable breakdown of your answers.
                   </p>
                   <button
                     type="button"
@@ -997,7 +1104,7 @@ export const QuizTab = ({
               ) : null}
 
               <div className="min-h-0 flex-1 overflow-y-auto pr-1">
-                <div className="rounded-[32px] border border-slate-200 bg-white shadow-sm">
+                <div className="rounded-4xl border border-slate-200 bg-white shadow-sm">
                   <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-6 py-5">
                     <div>
                       <h4 className="text-lg font-semibold text-slate-900">
@@ -1051,11 +1158,14 @@ export const QuizTab = ({
                                   current === attempt.id ? null : attempt.id,
                                 )
                               }
-                              isLoading={attemptDetailsQuery.isLoading && isOpen}
+                              isLoading={
+                                attemptDetailsQuery.isLoading && isOpen
+                              }
                               errorMessage={attemptDetailsErrorMessage}
                               detailContent={
                                 isOpen ? attemptDetailsQuery.data : undefined
                               }
+                              attemptInsight={attempt.insight}
                             />
                           );
                         })}
