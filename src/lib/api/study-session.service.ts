@@ -111,49 +111,66 @@ export interface SessionDistractionItem {
 }
 
 export interface SessionReportDistractions {
-  items: SessionDistractionItem[];
+  items?: SessionDistractionItem[];
   totalDurationSeconds: number;
-  countByType: Record<string, number>;
+  breakdown: Record<string, number>;
+  totalEvents?: number;
 }
 
 export interface SessionReportActivity {
-  events: SessionEventItem[];
-  countByType: Record<string, number>;
+  events?: SessionEventItem[];
+  breakdown: Record<string, number>;
+  totalEvents?: number;
 }
 
 export interface SessionReportQuizAttempt {
-  id: string;
-  quizId: string;
-  score: number;
-  totalQuestions: number;
-  correctAnswers: number;
+  id?: string;
+  quizId?: string;
+  score?: number;
+  totalQuestions?: number;
+  correctAnswers?: number;
   percentage: number;
-  createdAt: string;
+  createdAt?: string;
   quiz?: { id: string; title: string; difficulty: string };
 }
 
 export interface SessionReportQuiz {
   attempts: SessionReportQuizAttempt[];
-  averageScore: number;
-  bestScore: number;
+  averagePercentage: number;
+  bestPercentage: number;
   totalAttempts: number;
+  attempted: boolean;
+  weakAreas?: string[];
+  latestInsight?: string | null;
 }
 
 export interface SessionReportImprovement {
+  summary?: string;
+  focusBand?: string;
+  strengths: string[];
+  risks: string[];
   recommendations: string[];
   nextSessionChecklist: string[];
-  overallRating: string;
 }
 
 export interface SessionReportEmailDelivery {
-  sent: boolean;
+  sentAt: string | null;
+  lastAttemptAt?: string | null;
+  lastError?: string | null;
+  sendCount?: number;
   emailAddress?: string;
-  sentAt?: string;
-  canResend: boolean;
 }
 
 export interface SessionReport {
-  session: SessionListItem;
+  session: SessionListItem & {
+    fileName?: string;
+    totalDurationSeconds?: number;
+    focusTimeSeconds: number;
+    idleTimeSeconds: number;
+    distractionCount: number;
+    focusScore?: number;
+    distractionRatioPercentage?: number;
+  };
   activity: SessionReportActivity;
   distractions: SessionReportDistractions;
   quiz: SessionReportQuiz;

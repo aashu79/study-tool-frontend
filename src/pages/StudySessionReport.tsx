@@ -232,7 +232,9 @@ const StudySessionReport = () => {
                   <>
                     <p className="text-white/85 text-sm flex items-center gap-1.5 font-medium">
                       <FiFileText size={13} />
-                      {report.session.file?.filename ?? "Unknown file"}
+                      {report.session.fileName ??
+                        report.session.file?.filename ??
+                        "Unknown file"}
                     </p>
                     <p className="text-white/65 text-xs mt-1">
                       {formatDate(report.session.sessionStart)}
@@ -246,7 +248,7 @@ const StudySessionReport = () => {
 
             {report && (
               <div className="shrink-0">
-                {report.emailDelivery.sent ? (
+                {report.emailDelivery.sentAt ? (
                   <div className="flex flex-col items-end gap-2">
                     <span className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm rounded-xl px-3 py-1.5 text-xs font-semibold">
                       <FiCheckCircle size={12} />
@@ -307,7 +309,8 @@ const StudySessionReport = () => {
                 icon={<FiClock size={15} />}
                 label="Duration"
                 value={formatDuration(
-                  report.session.summary?.totalDurationSeconds ??
+                  report.session.totalDurationSeconds ??
+                    report.session.summary?.totalDurationSeconds ??
                     report.session.focusTimeSeconds +
                       report.session.idleTimeSeconds,
                 )}
@@ -316,16 +319,17 @@ const StudySessionReport = () => {
               <MiniStatCard
                 icon={<FiTarget size={15} />}
                 label="Focus Score"
-                value={`${report.session.summary?.focusScore ?? 0}%`}
-                sub={`${report.session.summary?.distractionRatioPercentage ?? 0}% distraction`}
+                value={`${report.session.focusScore ?? report.session.summary?.focusScore ?? 0}%`}
+                sub={`${report.session.distractionRatioPercentage ?? report.session.summary?.distractionRatioPercentage ?? 0}% distraction`}
                 color="teal"
               />
               <MiniStatCard
                 icon={<FiAlertTriangle size={15} />}
                 label="Distractions"
                 value={String(
-                  report.session.summary?.distractionCount ??
-                    report.session.distractionCount,
+                  report.session.distractionCount ??
+                    report.session.summary?.distractionCount ??
+                    0,
                 )}
                 sub={formatDuration(
                   report.distractions.totalDurationSeconds || 0,
@@ -338,7 +342,7 @@ const StudySessionReport = () => {
                 value={String(report.quiz.totalAttempts)}
                 sub={
                   report.quiz.totalAttempts > 0
-                    ? `Avg ${report.quiz.averageScore.toFixed(1)}%`
+                    ? `Avg ${report.quiz.averagePercentage?.toFixed(1) ?? 0}%`
                     : "None yet"
                 }
                 color="sky"
@@ -346,7 +350,13 @@ const StudySessionReport = () => {
             </div>
 
             {/* FOCUS GAUGE */}
-            <FocusGauge score={report.session.summary?.focusScore ?? 0} />
+            <FocusGauge
+              score={
+                report.session.focusScore ??
+                report.session.summary?.focusScore ??
+                0
+              }
+            />
 
             {/* ACTIVITY + DISTRACTIONS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -354,13 +364,13 @@ const StudySessionReport = () => {
                 title="Activity Breakdown"
                 icon={<FiZap size={15} />}
               >
-                {Object.keys(report.activity.countByType || {}).length === 0 ? (
+                {Object.keys(report.activity.breakdown || {}).length === 0 ? (
                   <p className="text-sm text-slate-400 font-medium">
                     No activity recorded
                   </p>
                 ) : (
                   <dl className="space-y-2.5">
-                    {Object.entries(report.activity.countByType || {}).map(
+                    {Object.entries(report.activity.breakdown || {}).map(
                       ([type, count]) => (
                         <div
                           key={type}
@@ -383,7 +393,7 @@ const StudySessionReport = () => {
                 title="Distraction Breakdown"
                 icon={<FiAlertCircle size={15} />}
               >
-                {Object.keys(report.distractions.countByType || {}).length ===
+                {Object.keys(report.distractions.breakdown || {}).length ===
                 0 ? (
                   <div className="flex items-center gap-2 text-sm text-emerald-700 font-semibold">
                     <FiCheckCircle size={16} className="text-emerald-500" />
@@ -391,7 +401,7 @@ const StudySessionReport = () => {
                   </div>
                 ) : (
                   <dl className="space-y-2.5">
-                    {Object.entries(report.distractions.countByType || {}).map(
+                    {Object.entries(report.distractions.breakdown || {}).map(
                       ([type, count]) => (
                         <div
                           key={type}
@@ -431,14 +441,14 @@ const StudySessionReport = () => {
                   {[
                     {
                       label: "Best Score",
-                      value: `${report.quiz.bestScore.toFixed(1)}%`,
+                      value: `${report.quiz.bestPercentage?.toFixed(1) ?? 0}%`,
                       color: "from-emerald-50 to-teal-50",
                       border: "border-emerald-200",
                       text: "text-emerald-700",
                     },
                     {
                       label: "Avg Score",
-                      value: `${report.quiz.averageScore.toFixed(1)}%`,
+                      value: `${report.quiz.averagePercentage?.toFixed(1) ?? 0}%`,
                       color: "from-teal-50 to-cyan-50",
                       border: "border-teal-200",
                       text: "text-teal-700",
@@ -494,21 +504,23 @@ const StudySessionReport = () => {
             )}
 
             {/* RECOMMENDATIONS */}
-            {(report.improvement.recommendations.length > 0 ||
-              report.improvement.nextSessionChecklist.length > 0) && (
+            {(report.improvement.recommendations?.length > 0 ||
+              report.improvement.nextSessionChecklist?.length > 0 ||
+              report.improvement.strengths?.length > 0 ||
+              report.improvement.risks?.length > 0) && (
               <SectionCard
                 title="Recommendations & Next Steps"
                 icon={<FiCheckCircle size={15} />}
               >
-                {report.improvement.overallRating && (
+                {report.improvement.summary && (
                   <div className="mb-5 inline-flex items-center gap-2 bg-linear-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl px-4 py-2 text-sm font-bold text-emerald-700">
                     <FiTarget size={14} />
-                    Overall Rating: {report.improvement.overallRating}
+                    {report.improvement.summary}
                   </div>
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {report.improvement.recommendations.length > 0 && (
+                  {report.improvement.recommendations?.length > 0 && (
                     <div>
                       <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
                         Recommendations
@@ -530,7 +542,7 @@ const StudySessionReport = () => {
                     </div>
                   )}
 
-                  {report.improvement.nextSessionChecklist.length > 0 && (
+                  {report.improvement.nextSessionChecklist?.length > 0 && (
                     <div>
                       <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
                         Next Session Checklist
@@ -553,6 +565,50 @@ const StudySessionReport = () => {
                       </ul>
                     </div>
                   )}
+
+                  {report.improvement.strengths?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+                        Strengths
+                      </p>
+                      <ul className="space-y-2.5">
+                        {report.improvement.strengths.map((item, i) => (
+                          <li
+                            key={i}
+                            className="flex gap-2.5 text-sm text-slate-700"
+                          >
+                            <FiZap
+                              size={15}
+                              className="text-sky-500 shrink-0 mt-0.5"
+                            />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {report.improvement.risks?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+                        Risks
+                      </p>
+                      <ul className="space-y-2.5">
+                        {report.improvement.risks.map((item, i) => (
+                          <li
+                            key={i}
+                            className="flex gap-2.5 text-sm text-slate-700"
+                          >
+                            <FiAlertTriangle
+                              size={15}
+                              className="text-rose-500 shrink-0 mt-0.5"
+                            />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </SectionCard>
             )}
@@ -567,7 +623,7 @@ const StudySessionReport = () => {
                   <p className="font-bold text-slate-800 text-sm">
                     Email This Report
                   </p>
-                  {report.emailDelivery.sent ? (
+                  {report.emailDelivery.sentAt ? (
                     <p className="text-xs text-slate-500 mt-0.5">
                       Sent to{" "}
                       <span className="font-semibold text-slate-700">
@@ -583,14 +639,14 @@ const StudySessionReport = () => {
                 </div>
               </div>
               <button
-                onClick={() => handleSendEmail(report.emailDelivery.sent)}
+                onClick={() => handleSendEmail(!!report.emailDelivery.sentAt)}
                 disabled={sendEmailMutation.isPending}
                 className="shrink-0 flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-emerald-500 to-teal-600 text-white rounded-xl text-sm font-bold transition-all hover:shadow-md shadow-sm shadow-emerald-200 disabled:opacity-50"
               >
                 <FiMail size={14} />
                 {sendEmailMutation.isPending
                   ? "Sending..."
-                  : report.emailDelivery.sent
+                  : report.emailDelivery.sentAt
                     ? "Resend Email"
                     : "Send Email"}
               </button>
