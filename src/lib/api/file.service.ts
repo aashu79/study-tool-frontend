@@ -49,7 +49,7 @@ export const fileService = {
   },
 
   deleteFile: async (fileId: string): Promise<void> => {
-    await apiClient.delete(`/api/file/${fileId}`);
+    await apiClient.delete(`/api/file/file/${fileId}`);
   },
 
   getProfilePicture: async (): Promise<SignedUrlResponse> => {

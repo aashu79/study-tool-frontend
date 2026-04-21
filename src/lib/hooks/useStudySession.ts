@@ -90,7 +90,11 @@ export const useStudySession = (fileId: string | undefined) => {
       if (!currentSessionId || durationSeconds <= 0) {
         return;
       }
-
+      console.log("Logging distraction:", {
+        distractionType,
+        durationSeconds,
+        metadata,
+      });
       void studySessionService
         .logDistraction(currentSessionId, {
           distractionType,

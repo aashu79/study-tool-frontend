@@ -19,8 +19,8 @@ import toast from "react-hot-toast";
 
 const { Dragger } = AntUpload;
 
-const MAX_FILE_SIZE_BYTES = 1 * 1024 * 1024;
-const MAX_FILE_SIZE_LABEL = "1 MB";
+const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+const MAX_FILE_SIZE_LABEL = "10 MB";
 
 const UploadPage = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
